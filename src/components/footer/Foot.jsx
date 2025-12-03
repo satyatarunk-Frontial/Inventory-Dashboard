@@ -2,7 +2,7 @@
 import React from "react";
 import { Box, Typography, Link } from "@mui/material";
 
-export default function Footer({
+export default function Foot({
   logoSrc = "https://frontial.com/wp-content/uploads/2025/02/Frontial-Salesforce-Partner-India.png",
   logoAlt = "Forntial",
 }) {
