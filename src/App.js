@@ -8,6 +8,7 @@ import GraphsDashboardPage from "./pages/GraphDashboardpage";
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import Foot from "./components/footer/Foot";
 
 const theme = createTheme({
   typography: {
@@ -42,6 +43,7 @@ function App() {
           />
           <Route path="/category/:type" element={<StockCategoryPage />} />
         </Routes>
+        <Foot />
       </BrowserRouter>
     </ThemeProvider>
   );
