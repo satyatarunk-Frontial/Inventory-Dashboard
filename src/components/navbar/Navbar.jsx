@@ -1,7 +1,7 @@
 // src/components/navbar/Navbar.jsx
 import React, { useState } from "react";
 import { Box, Typography, Button, Stack, Avatar } from "@mui/material";
-import { UserRoundPen } from "lucide-react";
+import { User } from "lucide-react";
 import AuthDialog from "../login/login";
 
  
@@ -99,7 +99,7 @@ export default function Navbar() {
         <Button
           onClick={handleOpenAuth}
           variant="contained"
-          startIcon={<UserRoundPen size={19} />}
+          startIcon={<User size={19} />}
           sx={{
             bgcolor: "white",
             color: "#2e7d32",
