@@ -1,6 +1,6 @@
 // src/components/navbar/Navbar.jsx
 import React, { useState } from "react";
-import { Box, Typography, Button, Stack, Avatar } from "@mui/material";
+import { Box, Typography, Button, Stack } from "@mui/material";
 import { User } from "lucide-react";
 import AuthDialog from "../login/login";
 
