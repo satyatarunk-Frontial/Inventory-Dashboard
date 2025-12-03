@@ -1,8 +1,6 @@
 // CategoryTrendGraph.jsx
 import React, { useState, useMemo } from "react";
 import {  Calendar } from "lucide-react";
- 
-import Avatar from "@mui/material/Avatar";
 import { alpha } from "@mui/material/styles";
 
 
@@ -34,7 +32,7 @@ import {
   getCategorySalesTrend,
   filterItemsByDateRange,
   getAvailableDates,
-  buildFullDateSpan,
+   
 } from "./graphUtils";
 
 export default function CategoryTrendGraph({ items }) {
