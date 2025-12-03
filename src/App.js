@@ -1,19 +1,17 @@
-import "./App.css";
+import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-import Navbar from "./components/navbar/Navbar";
-import ProductCards from "./components/productCards/ProductCards";
-import StockCategoryPage from "./pages/StockCategoryPage";
-import GraphsDashboardPage from "./pages/GraphDashboardpage";
-
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
+import SideBar, { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED } from "./components/sideBar/SideBar";
+import Navbar, { NAVBAR_HEIGHT } from "./components/navbar/Navbar";
+import ProductCards from "./components/productCards/ProductCards";
+import GraphsDashboardPage from "./pages/GraphDashboardpage";
+import StockCategoryPage from "./pages/StockCategoryPage";
 import Foot from "./components/footer/Foot";
+import "./App.css";
 
 const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
-
     h1: { fontFamily: "Alata, sans-serif" },
     h2: { fontFamily: "Alata, sans-serif" },
     h3: { fontFamily: "Alata, sans-serif" },
@@ -23,30 +21,53 @@ const theme = createTheme({
   },
 });
 
-function App() {
+export default function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const contentMarginLeft = sidebarOpen ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED;
+
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-
       <BrowserRouter>
-        <Navbar />
+        <SideBar initialOpen={sidebarOpen} onToggle={(v) => setSidebarOpen(v)} />
+        <div
+          style={{
+            marginLeft: contentMarginLeft,
+            transition: "margin-left 180ms linear",
+            minHeight: "100vh",
+            paddingTop: NAVBAR_HEIGHT,
+            boxSizing: "border-box",
+            background: "var(--app-bg, #f6fbfb)",
+          }}
+        >
+          <Navbar />
 
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <ProductCards />
-                <GraphsDashboardPage />
-              </>
-            }
-          />
-          <Route path="/category/:type" element={<StockCategoryPage />} />
-        </Routes>
-        <Foot />
+          <main
+            style={{
+              width: "100%",
+              maxWidth: 1460,
+              margin: "0 auto",
+              padding: "20px 24px",
+              boxSizing: "border-box",
+            }}
+          >
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <>
+                    <ProductCards />
+                    <GraphsDashboardPage />
+                  </>
+                }
+              />
+              <Route path="/category/:type" element={<StockCategoryPage />} />
+            </Routes>
+          </main>
+
+          <Foot />
+        </div>
       </BrowserRouter>
     </ThemeProvider>
   );
 }
-
-export default App;

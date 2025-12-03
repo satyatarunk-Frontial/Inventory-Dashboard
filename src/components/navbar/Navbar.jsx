@@ -4,12 +4,16 @@ import { Box, Typography, Button, Stack } from "@mui/material";
 import { User } from "lucide-react";
 import AuthDialog from "../login/login";
 
- 
+/**
+ * Navbar that sits above the sidebar (no gap).
+ * Keeps a clean gradient background (no backdrop-filter) for performance.
+ */
+export const NAVBAR_HEIGHT = 85;
 
 export default function Navbar() {
   const [authOpen, setAuthOpen] = useState(false);
 
-  // Brand text that should change after login (default as in your design)
+  // Brand text that can change on login
   const [brandText, setBrandText] = useState("The Pickls");
 
   function handleOpenAuth() {
@@ -22,21 +26,25 @@ export default function Navbar() {
   // onLogin receives a user object { id, username, brandText }
   function handleLoginSuccess(user) {
     // If user has brandText, replace the brand with it; else fallback to default
-    setBrandText(user.brandText ? user.brandText : brandText);
+    setBrandText(user?.brandText ? user.brandText : brandText);
     setAuthOpen(false);
   }
 
   return (
     <Box
       sx={{
-        bgcolor: "rgba(255, 255, 255, 0.12)",
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.18)",
-        position: "sticky",
+        position: "fixed",
         top: 0,
-        zIndex: 1300,
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.08)",
+        left: 0,
+        right: 0,
+        height: NAVBAR_HEIGHT,
+        zIndex: 1400,
+        display: "flex",
+        alignItems: "center",
+        background: "linear-gradient(180deg, #FFFFFF 0%, #F8FBFB 100%)",
+        borderBottom: "1px solid rgba(0,0,0,0.04)",
+        boxShadow: "0 6px 18px rgba(12,24,48,0.04)",
+        px: { xs: 2, sm: 4 },
       }}
     >
       <Stack
@@ -44,8 +52,7 @@ export default function Navbar() {
         alignItems="center"
         justifyContent="space-between"
         sx={{
-          px: { xs: 2, sm: 4 },
-          py: 2,
+          width: "100%",
           maxWidth: "1460px",
           mx: "auto",
         }}
@@ -61,7 +68,7 @@ export default function Navbar() {
               height: { xs: 44, sm: 52 },
               borderRadius: "50%",
               objectFit: "cover",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
             }}
           />
 
@@ -69,7 +76,7 @@ export default function Navbar() {
             variant="h5"
             sx={{
               fontWeight: 800,
-              color: "#1a3a1a",
+              color: "#13331f",
               letterSpacing: "0.3px",
               display: { xs: "none", md: "block" },
             }}
@@ -87,7 +94,7 @@ export default function Navbar() {
             right: 50,
             textAlign: "center",
             fontWeight: 600,
-            color: "#1e3a1e",
+            color: "#153a1f",
             pointerEvents: "none",
             display: { xs: "none", lg: "block" },
           }}
@@ -101,20 +108,19 @@ export default function Navbar() {
           variant="contained"
           startIcon={<User size={19} />}
           sx={{
-            bgcolor: "white",
-            color: "#2e7d32",
+            bgcolor: "#ffffff",
+            color: "#1e7b34",
             fontWeight: 600,
             fontSize: "0.95rem",
             textTransform: "none",
             borderRadius: "30px",
             px: 3,
             py: 1,
-            boxShadow: "0 4px 14px rgba(0, 0, 0, 0.12)",
-            transition: "all 0.2s ease",
+            boxShadow: "0 6px 18px rgba(12,24,48,0.08)",
+            transition: "transform 160ms ease, box-shadow 160ms ease",
             "&:hover": {
-              bgcolor: "white",
-              boxShadow: "0 8px 20px rgba(0, 0, 0, 0.18)",
               transform: "translateY(-2px)",
+              boxShadow: "0 12px 28px rgba(12,24,48,0.12)",
             },
           }}
         >
