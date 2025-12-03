@@ -178,16 +178,16 @@ export default function GraphsHeader({ allItems = [], items = [] }) {
     setOpen(false);
   };
 
-  const onModeChange = (e, newMode) => {
-    if (!newMode) return;
-    setMode(newMode);
-    if (newMode === "single") {
-      setTmpFrom("");
-      setTmpTo("");
-    } else {
-      setTmpDate("");
-    }
-  };
+  // const onModeChange = (e, newMode) => {
+  //   if (!newMode) return;
+  //   setMode(newMode);
+  //   if (newMode === "single") {
+  //     setTmpFrom("");
+  //     setTmpTo("");
+  //   } else {
+  //     setTmpDate("");
+  //   }
+  // };
 
   // accents — left unchanged
   const accentProducts = { background: "linear-gradient(135deg, #E4ECFF 0%, #C3D4FF 40%, #9AB7FF 100%)", labelColor: "#2347C5", valueColor: "#0A1A3B", iconBg: "rgba(35,71,197,0.22)", iconColor: "#2347C5" };

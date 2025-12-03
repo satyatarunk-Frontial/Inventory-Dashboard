@@ -12,7 +12,7 @@ import {
   alpha,
 } from "@mui/material";
 import { Trash2 } from "lucide-react";
-import { hover } from "@testing-library/user-event/dist/hover";
+ 
 
 export default function EditProductModal({
   open,

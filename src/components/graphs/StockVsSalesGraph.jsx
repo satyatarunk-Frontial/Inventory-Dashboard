@@ -17,8 +17,6 @@ export default function StockVsSalesGraph({ items }) {
   const [committedCustom, setCommittedCustom] = useState(null);
 
   const availableDates = useMemo(() => getAvailableDates(items), [items]);
-  const minAvailable = availableDates[0] || "";
-  const maxAvailable = availableDates[availableDates.length - 1] || "";
 
   const trimmedItems = useMemo(() => {
     if (range === "custom" && committedCustom) {

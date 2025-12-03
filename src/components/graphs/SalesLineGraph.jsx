@@ -1,7 +1,5 @@
-// SalesLineGraph.jsx
+// src/components/graphs/SalesLineGraph.jsx
 import React, { useState, useMemo } from "react";
-import Avatar from "@mui/material/Avatar";
-import { alpha } from "@mui/material/styles";
 
 import {
   Box,
@@ -16,6 +14,7 @@ import {
   MenuItem,
   FormControl,
 } from "@mui/material";
+
 import {
   LineChart,
   Line,
@@ -26,6 +25,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+
 import {
   CATEGORY_KEYS,
   CATEGORY_LABELS,
@@ -37,6 +37,7 @@ import {
   getAvailableDates,
   dateKey,
 } from "./graphUtils";
+
 import { Calendar, TrendingUp } from "lucide-react";
 
 export default function SalesLineGraph({ items }) {
@@ -48,17 +49,19 @@ export default function SalesLineGraph({ items }) {
   const [tmpFrom, setTmpFrom] = useState("");
   const [tmpTo, setTmpTo] = useState("");
   const [tmpDate, setTmpDate] = useState("");
+
   const [committedCustom, setCommittedCustom] = useState(null);
 
+  // Available date limits for custom picker
   const availableDates = useMemo(() => getAvailableDates(items), [items]);
-  const minAvailable = availableDates[0] || "";
-  const maxAvailable = availableDates[availableDates.length - 1] || "";
 
+  // Category filter
   const categoryFilteredItems = useMemo(
     () => filterItemsByCategory(items || [], category),
     [items, category]
   );
 
+  // Trim items based on range or custom
   const trimmedItems = useMemo(() => {
     if (range === "custom" && committedCustom) {
       if (committedCustom.mode === "single") {
@@ -75,30 +78,39 @@ export default function SalesLineGraph({ items }) {
     return categoryFilteredItems;
   }, [range, committedCustom, categoryFilteredItems]);
 
-  const buildDates = (trimmed) => {
-    if (range === "custom" && committedCustom) {
-      if (committedCustom.mode === "single" && committedCustom.date)
-        return [committedCustom.date];
-      if (
-        committedCustom.mode === "range" &&
-        committedCustom.from &&
-        committedCustom.to
-      ) {
-        const span = buildFullDateSpan(trimmed || []);
-        return span.filter(
-          (d) => d >= committedCustom.from && d <= committedCustom.to
-        );
-      }
-    }
-    if (range === "all") return buildFullDateSpan(categoryFilteredItems);
-    if (["7", "15", "30", "90"].includes(range))
-      return buildLastNDaysSpan(categoryFilteredItems, Number(range));
-    return buildFullDateSpan(categoryFilteredItems);
-  };
-
+  // Build dates inline so ESLint doesn't warn about missing deps
   const data = useMemo(() => {
-    const dates = buildDates(trimmedItems);
+    const computeDates = (items) => {
+      if (range === "custom" && committedCustom) {
+        if (committedCustom.mode === "single" && committedCustom.date) {
+          return [committedCustom.date];
+        }
+
+        if (
+          committedCustom.mode === "range" &&
+          committedCustom.from &&
+          committedCustom.to
+        ) {
+          const span = buildFullDateSpan(items || []);
+          return span.filter(
+            (d) =>
+              d >= committedCustom.from && d <= committedCustom.to
+          );
+        }
+      }
+
+      if (range === "all") return buildFullDateSpan(categoryFilteredItems);
+
+      if (["7", "15", "30", "90"].includes(range)) {
+        return buildLastNDaysSpan(categoryFilteredItems, Number(range));
+      }
+
+      return buildFullDateSpan(categoryFilteredItems);
+    };
+
+    const dates = computeDates(trimmedItems);
     if (!dates || !dates.length) return [];
+
     return dates.map((date) => {
       const units = (trimmedItems || []).reduce((sum, item) => {
         const entry = (item.salesHistory || []).find(
@@ -108,16 +120,27 @@ export default function SalesLineGraph({ items }) {
       }, 0);
       return { date, units };
     });
-  }, [trimmedItems, range, committedCustom, categoryFilteredItems]);
+  }, [
+    trimmedItems,
+    range,
+    committedCustom,
+    categoryFilteredItems,
+  ]);
 
+  // Handle custom range apply
   const applyCustomRange = () => {
     if (tmpMode === "single" && tmpDate) {
       setCommittedCustom({ mode: "single", date: tmpDate });
       setCustomOpen(false);
       return;
     }
+
     if (tmpMode === "range" && tmpFrom && tmpTo) {
-      setCommittedCustom({ mode: "range", from: tmpFrom, to: tmpTo });
+      setCommittedCustom({
+        mode: "range",
+        from: tmpFrom,
+        to: tmpTo,
+      });
       setCustomOpen(false);
     }
   };
@@ -130,9 +153,12 @@ export default function SalesLineGraph({ items }) {
     setCustomOpen(false);
   };
 
-  const currentColor = category === "all" ? "#0098FF" : CATEGORY_COLORS[category];
+  const currentColor =
+    category === "all"
+      ? "#0098FF"
+      : CATEGORY_COLORS[category];
 
-  if (!data || data.length === 0) {
+  if (!data.length) {
     return (
       <Paper elevation={0} sx={{ p: 4, borderRadius: 4 }}>
         <Typography variant="h6" sx={{ mb: 1 }}>
@@ -146,7 +172,11 @@ export default function SalesLineGraph({ items }) {
   }
 
   return (
-    <Paper elevation={0} sx={{ p: 4, borderRadius: 4, position: "relative" }}>
+    <Paper
+      elevation={0}
+      sx={{ p: 4, borderRadius: 4, position: "relative" }}
+    >
+      {/* Header */}
       <Box
         sx={{
           display: "flex",
@@ -169,12 +199,22 @@ export default function SalesLineGraph({ items }) {
           >
             <TrendingUp size={22} /> Daily Sales Trend
           </Typography>
-          <Typography sx={{ color: "#64748b", fontSize: 14 }}>
+          <Typography
+            sx={{ color: "#64748b", fontSize: 14 }}
+          >
             Visualize sales movement over selected days.
           </Typography>
         </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        {/* Filters */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          {/* Category Select */}
           <FormControl size="small">
             <Select
               value={category}
@@ -182,10 +222,11 @@ export default function SalesLineGraph({ items }) {
               sx={{
                 minWidth: 140,
                 "& .MuiSelect-select": {
-                  transition: "transform 0.12s ease",
+                  transition: "0.12s ease",
                 },
-                "&:hover": { transform: "translateY(-2px)" },
-                "&:active": { transform: "scale(0.99)" },
+                "&:hover": {
+                  transform: "translateY(-2px)",
+                },
               }}
             >
               <MenuItem value="all">All Categories</MenuItem>
@@ -197,158 +238,169 @@ export default function SalesLineGraph({ items }) {
             </Select>
           </FormControl>
 
-         <Box sx={{ display: "flex", gap: 4, alignItems: "center", flexWrap: "wrap", marginLeft: "auto" }}>
-  <ToggleButtonGroup
-    exclusive
-    value={range}
-    onChange={(_, v) => {
-      if (!v) return;
-      setRange(v);
-      if (v === "custom") {
-        setCustomOpen(true);
-        setCommittedCustom(null);
-      } else {
-        setCustomOpen(false);
-        setCommittedCustom(null);
-      }
-    }}
-    onClick={(e) => e.stopPropagation()}
-    sx={{
-      display: "flex",
-      gap: 1.25,
-      "& .MuiToggleButton-root": {
-        borderRadius: "10px",
-        px: 1.6,
-        py: 0.6,
-        minWidth: 56,
-        textTransform: "none",
-        fontWeight: 600,
-        transition: "background 180ms ease, transform 140ms ease, color 140ms",
-        "&:hover": { transform: "translateY(-3px)" },
-        "&.Mui-selected": {
-          // selected toggle style (soft blue glow + slightly darker bg)
-          background: "linear-gradient(180deg, rgba(94,166,238,0.14), rgba(94,166,238,0.10))",
-          color: "rgb(13,60,97)",
-          boxShadow: "0 4px 12px rgba(94,166,238,0.12)",
-        },
-        "&:active": { transform: "scale(0.985)" },
-      },
-    }}
-  >
-    <ToggleButton value="all">All</ToggleButton>
-    <ToggleButton value="7">7d</ToggleButton>
-    <ToggleButton value="15">15d</ToggleButton>
-    <ToggleButton value="30">30d</ToggleButton>
-    {/* <-- small change: ensure clicking the Custom toggle toggles popup even when already selected */}
-    <ToggleButton
-      value="custom"
-      onClick={(e) => {
-        e.stopPropagation();
-        // if the toggle is already selected, ToggleButtonGroup won't fire onChange,
-        // so toggle the popup manually
-        if (range === "custom") {
-          setCustomOpen((s) => !s);
-        }
-      }}
-    >
-      <Calendar size={16} />
-      &nbsp;Custom
-    </ToggleButton>
-  </ToggleButtonGroup>
-</Box>
+          {/* Range Buttons */}
+          <Box
+            sx={{
+              display: "flex",
+              gap: 4,
+              alignItems: "center",
+              flexWrap: "wrap",
+              marginLeft: "auto",
+            }}
+          >
+            <ToggleButtonGroup
+              exclusive
+              value={range}
+              onChange={(_, v) => {
+                if (!v) return;
+                setRange(v);
+                if (v === "custom") {
+                  setCustomOpen(true);
+                  setCommittedCustom(null);
+                } else {
+                  setCustomOpen(false);
+                  setCommittedCustom(null);
+                }
+              }}
+              sx={{
+                gap: 1.25,
+                "& .MuiToggleButton-root": {
+                  borderRadius: "10px",
+                  px: 1.6,
+                  py: 0.6,
+                  minWidth: 56,
+                  textTransform: "none",
+                  fontWeight: 600,
+                  transition:
+                    "background 180ms, transform 140ms, color 140ms",
+                  "&:hover": {
+                    transform: "translateY(-3px)",
+                  },
+                  "&.Mui-selected": {
+                    background:
+                      "linear-gradient(180deg, rgba(94,166,238,0.14), rgba(94,166,238,0.10))",
+                    color: "rgb(13,60,97)",
+                    boxShadow:
+                      "0 4px 12px rgba(94,166,238,0.12)",
+                  },
+                },
+              }}
+            >
+              <ToggleButton value="all">All</ToggleButton>
+              <ToggleButton value="7">7d</ToggleButton>
+              <ToggleButton value="15">15d</ToggleButton>
+              <ToggleButton value="30">30d</ToggleButton>
 
+              <ToggleButton
+                value="custom"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (range === "custom") {
+                    setCustomOpen((s) => !s);
+                  }
+                }}
+              >
+                <Calendar size={16} />
+                &nbsp;Custom
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
         </Box>
       </Box>
 
-      {/* Custom popup: stopPropagation on root so clicks don't bubble up to header */}
+      {/* Custom Range Popup */}
       <Fade in={customOpen}>
-  <Paper
-    elevation={4}
-    sx={{
-      position: "absolute",
-      right: 30,
-      top: 120,
-      p: 2.5,
-      borderRadius: 3,
-      width: 320,
-      zIndex: 9999,
-      pointerEvents: "auto",
-    }}
-    onClick={(e) => e.stopPropagation()}
-  >
-    <Typography sx={{ fontSize: 15, fontWeight: 700, mb: 2 }}>
-      <Calendar size={16} />{" "}
-      Custom Date
-    </Typography>
+        <Paper
+          elevation={4}
+          sx={{
+            position: "absolute",
+            right: 30,
+            top: 120,
+            p: 2.5,
+            borderRadius: 3,
+            width: 320,
+            zIndex: 9999,
+          }}
+        >
+          <Typography
+            sx={{ fontSize: 15, fontWeight: 700, mb: 2 }}
+          >
+            <Calendar size={16} /> Custom Date
+          </Typography>
 
-    {/* RANGE ONLY - keeps availableDates restrictions */}
-    <Box sx={{ display: "flex", gap: 1 }}>
-      <TextField
-        type="date"
-        label="From"
-        size="small"
-        value={tmpFrom}
-        onChange={(e) => setTmpFrom(e.target.value)}
-        InputLabelProps={{ shrink: true }}
-        inputProps={
-          availableDates.length
-            ? { min: availableDates[0], max: availableDates[availableDates.length - 1] }
-            : {}
-        }
-        sx={{ flex: 1 }}
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={(e) => e.stopPropagation()}
-      />
+          <Box sx={{ display: "flex", gap: 1 }}>
+            {/* From */}
+            <TextField
+              type="date"
+              label="From"
+              size="small"
+              value={tmpFrom}
+              onChange={(e) => setTmpFrom(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              inputProps={
+                availableDates.length
+                  ? {
+                      min: availableDates[0],
+                      max: availableDates[availableDates.length - 1],
+                    }
+                  : {}
+              }
+              sx={{ flex: 1 }}
+            />
 
-      <TextField
-        type="date"
-        label="To"
-        size="small"
-        value={tmpTo}
-        onChange={(e) => setTmpTo(e.target.value)}
-        InputLabelProps={{ shrink: true }}
-        inputProps={
-          availableDates.length
-            ? { min: availableDates[0], max: availableDates[availableDates.length - 1] }
-            : {}
-        }
-        sx={{ flex: 1 }}
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={(e) => e.stopPropagation()}
-      />
-    </Box>
+            {/* To */}
+            <TextField
+              type="date"
+              label="To"
+              size="small"
+              value={tmpTo}
+              onChange={(e) => setTmpTo(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              inputProps={
+                availableDates.length
+                  ? {
+                      min: availableDates[0],
+                      max: availableDates[availableDates.length - 1],
+                    }
+                  : {}
+              }
+              sx={{ flex: 1 }}
+            />
+          </Box>
 
-    <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-      <Button
-        variant="outlined"
-        onClick={(e) => { e.stopPropagation(); cancelCustom(); }}
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        Cancel
-      </Button>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              mt: 2,
+            }}
+          >
+            <Button variant="outlined" onClick={cancelCustom}>
+              Cancel
+            </Button>
 
-      <Button
-        variant="contained"
-        onClick={(e) => { e.stopPropagation(); applyCustomRange(); }}
-        onMouseDown={(e) => e.stopPropagation()}
-        disabled={
-          !(
-            tmpFrom &&
-            tmpTo &&
-            tmpFrom <= tmpTo &&
-            availableDates.length &&
-            tmpFrom >= availableDates[0] &&
-            tmpTo <= availableDates[availableDates.length - 1]
-          )
-        }
-      >
-        Apply
-      </Button>
-    </Box>
-  </Paper>
-</Fade>
+            <Button
+              variant="contained"
+              onClick={applyCustomRange}
+              disabled={
+                !(
+                  tmpFrom &&
+                  tmpTo &&
+                  tmpFrom <= tmpTo &&
+                  availableDates.length &&
+                  tmpFrom >= availableDates[0] &&
+                  tmpTo <=
+                    availableDates[availableDates.length - 1]
+                )
+              }
+            >
+              Apply
+            </Button>
+          </Box>
+        </Paper>
+      </Fade>
 
-
+      {/* Chart */}
       <Box sx={{ width: "100%", height: 380, mt: 2 }}>
         <ResponsiveContainer>
           <LineChart data={data}>

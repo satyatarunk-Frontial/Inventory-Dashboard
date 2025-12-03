@@ -8,8 +8,6 @@ import {
   Typography,
   Box,
   Fade,
-  ToggleButtonGroup,
-  ToggleButton,
   TextField,
   IconButton,
   alpha,
@@ -36,8 +34,7 @@ export default function PieChartGraph({ items }) {
   const [committedCustom, setCommittedCustom] = useState(null);
 
   const availableDates = useMemo(() => getAvailableDates(items), [items]);
-  const minAvailable = availableDates[0] || "";
-  const maxAvailable = availableDates[availableDates.length - 1] || "";
+
 
   const trimmed = useMemo(() => {
     if (committedCustom) {
