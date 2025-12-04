@@ -45,9 +45,10 @@ export default function App() {
           <main
             style={{
               width: "100%",
-              maxWidth: 1460,
+              maxWidth: 1560,
               margin: "0 auto",
-              // padding: "20px 24px",
+              paddingTop: "24px",
+              paddingLeft:"22px",
               boxSizing: "border-box",
             }}
           >

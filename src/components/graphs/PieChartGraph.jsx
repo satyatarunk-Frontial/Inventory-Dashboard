@@ -81,6 +81,7 @@ export default function PieChartGraph({ items }) {
         background: "#fff",
         borderRadius: 3.5,
         p: 3,
+        width: "85%",
         boxShadow: "0 12px 40px rgba(0,0,0,0.08)",
         height: "100%",
         display: "flex",
