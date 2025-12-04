@@ -1,5 +1,5 @@
 // src/Auth/Login.jsx
-import { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import users from "../data/users";
 import { AuthContext } from "../App";
@@ -17,40 +17,43 @@ import { Lock, LogIn } from "lucide-react";
 import Signup from "./Singup";
 import ForgotPassword from "./ForgotPassword";
 
-function Login() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showForgot, setShowForgot] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
 
   const navigate = useNavigate();
-  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, login } = useContext(AuthContext); // Only login() is used
 
-  // All hooks called unconditionally — ESLint happy
+  // If already logged in → go to dashboard
   useEffect(() => {
-    if (isLoggedIn || localStorage.getItem("isLoggedIn") === "true") {
-      setIsLoggedIn(true);
-      navigate("/dashboard", { replace: true });
+    if (isLoggedIn) {
+      navigate("/", { replace: true });
     }
-  }, [isLoggedIn, setIsLoggedIn, navigate]);
+  }, [isLoggedIn, navigate]);
 
-  // Early return AFTER hooks
   if (isLoggedIn) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/" replace />;
   }
 
- const handleLogin = (e) => {
-  e.preventDefault();
-  const user = users.find((u) => u.username === email && u.password === password);
-  if (user) {
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("user", JSON.stringify(user));
-    setIsLoggedIn(true);
-    navigate("/dashboard", { replace: true });
-  } else {
-    alert("Invalid email or password!");
-  }
-};
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    const user = users.find(
+      (u) => u.username === email && u.password === password
+    );
+
+    if (user) {
+      // This triggers context update + localStorage + redirect
+      login(user);
+    } else {
+      alert("Invalid email or password!");
+      // Optional: clear fields
+      // setEmail("");
+      // setPassword("");
+    }
+  };
 
   return (
     <Box
@@ -67,34 +70,26 @@ function Login() {
         background: "white",
       }}
     >
-     {/* LEFT PANEL */}
+      {/* ==================== LEFT PANEL (Beautiful Design) ==================== */}
       <Box
         sx={{
           flex: 1,
           minWidth: { xs: "100%", md: "50%" },
           height: "100%",
           overflow: "hidden",
-
           color: "white",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-
           p: { xs: 2, sm: 3, md: 5, lg: 6 },
-
           background:
             "linear-gradient(135deg, #352F5C 0%, #289DD9 40%, #94C8E9 100%)",
           position: "relative",
-
-          /* Adjust for small height screens */
-          "@media (max-height: 700px)": {
-            pt: 6,
-            pb: 6,
-          },
+          "@media (max-height: 700px)": { pt: 6, pb: 6 },
         }}
       >
-        {/* Glow elements responsive */}
+        {/* Glow effects */}
         <Box
           sx={{
             position: "absolute",
@@ -108,7 +103,6 @@ function Login() {
             animation: "float 6s ease-in-out infinite",
           }}
         />
-
         <Box
           sx={{
             position: "absolute",
@@ -123,31 +117,30 @@ function Login() {
           }}
         />
 
-        {/* Floating Icons */}
+        {/* Floating emojis */}
         {[
-          { emoji: "🛒", top: "5%", left: "6%" },
-          { emoji: "📦", bottom: "5%", left: "5%" },
-          { emoji: "💰", top: "7%", right: "10%" },
-          { emoji: "📊", bottom: "10%", right: "6%" },
-        ].map((f, i) => (
+          { emoji: "Shopping Cart", top: "5%", left: "6%" },
+          { emoji: "Package", bottom: "5%", left: "5%" },
+          { emoji: "Money Bag", top: "7%", right: "10%" },
+          { emoji: "Chart Increasing", bottom: "10%", right: "6%" },
+        ].map((item, i) => (
           <Box
             key={i}
             sx={{
               position: "absolute",
-              top: f.top,
-              bottom: f.bottom,
-              left: f.left,
-              right: f.right,
+              top: item.top,
+              bottom: item.bottom,
+              left: item.left,
+              right: item.right,
               fontSize: { xs: 18, sm: 26, md: 32, lg: 36 },
               animation: `float ${6 + i}s ease-in-out infinite`,
               textShadow: "0 0 10px rgba(255,255,255,0.8)",
             }}
           >
-            {f.emoji}
+            {item.emoji}
           </Box>
         ))}
 
-        {/* Title */}
         <Typography
           variant="h3"
           sx={{
@@ -159,69 +152,51 @@ function Login() {
             background: "#ffffff",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
-            position: "relative",
           }}
         >
           Stock Inventory
         </Typography>
 
-        {/* Subtitle */}
         <Typography
           variant="body1"
           sx={{
-            mt: { xs: 1.5, sm: 2 },
+            mt: 2,
             textAlign: "center",
             maxWidth: 560,
-            px: { xs: 1, sm: 2 },
-            fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
+            px: 2,
+            fontSize: { xs: "0.85rem", md: "1rem" },
             opacity: 0.95,
-            textShadow: "0 0 8px rgba(255,255,255,0.6)",
           }}
         >
           Effortlessly manage inventory, track products, and optimize warehouse
           operations with a clean and intuitive interface.
         </Typography>
 
-        {/* Features */}
+        {/* Features grid */}
         <Box
           sx={{
-            mt: { xs: 3, sm: 4, md: 5 },
+            mt: 5,
             display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              sm: "1fr 1fr",
-            },
-            gap: { xs: 1.5, sm: 2 },
+            gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+            gap: 2,
             width: "100%",
             maxWidth: 500,
           }}
         >
           {[
-            {
-              emoji: "📦",
-              title: "Products",
-              desc: "Add, update, and track items",
-            },
-            {
-              emoji: "🛒",
-              title: "Orders",
-              desc: "Manage online & offline sales",
-            },
-            { emoji: "📊", title: "Analytics", desc: "Monitor stock trends" },
-            {
-              emoji: "🏷️",
-              title: "Pricing",
-              desc: "Set discounts & bulk pricing",
-            },
+            { emoji: "Package", title: "Products", desc: "Add, update, track items" },
+            { emoji: "Shopping Cart", title: "Orders", desc: "Manage sales" },
+            { emoji: "Chart Increasing", title: "Analytics", desc: "Monitor trends" },
+            { emoji: "Tag", title: "Pricing", desc: "Discounts & bulk" },
           ].map((f, i) => (
             <Box
               key={i}
               sx={{
                 display: "flex",
                 alignItems: "center",
-                gap: { xs: 1.5, md: 2 },
-                p: { xs: 1.5, md: 2 },
-                borderRadius: "24px 0px 24px 0px",
+                gap: 2,
+                p: 2,
+                borderRadius: "24px 0 24px 0",
                 background: "rgba(255,255,255,0.15)",
                 backdropFilter: "blur(12px)",
                 border: "1px solid rgba(255,255,255,0.25)",
@@ -229,63 +204,47 @@ function Login() {
             >
               <Box
                 sx={{
-                  width: { xs: 38, sm: 44, md: 50 },
-                  height: { xs: 38, sm: 44, md: 50 },
+                  width: 50,
+                  height: 50,
                   borderRadius: "50%",
-                  background: "#fff",
+                  bgcolor: "white",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  fontSize: { xs: "1.2rem", md: "1.5rem" },
+                  fontSize: "1.8rem",
                 }}
               >
                 {f.emoji}
               </Box>
-
               <Box>
-                <Typography
-                  variant="subtitle1"
-                  sx={{
-                    fontWeight: "bold",
-                    fontSize: { xs: "0.9rem", md: "1rem" },
-                  }}
-                >
+                <Typography variant="subtitle1" fontWeight="bold">
                   {f.title}
                 </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" } }}
-                >
-                  {f.desc}
-                </Typography>
+                <Typography variant="body2">{f.desc}</Typography>
               </Box>
             </Box>
           ))}
         </Box>
 
-        {/* Badge */}
         <Link
           href="https://www.frontial.com/"
           target="_blank"
           rel="noopener"
           underline="none"
           sx={{
-            mt: { xs: 3, sm: 4 },
-            px: { xs: 2, md: 3 },
+            mt: 4,
+            px: 3,
             py: 1,
             borderRadius: "50px",
-            fontSize: { xs: "0.75rem", sm: "0.85rem", md: "0.95rem" },
-            display: "inline-block",
-            background: "linear-gradient(90deg, #289DD9, #54A2D9, #94C8E9)",
+            background: "linear-gradient(90deg, #289DD9, #54A2D9)",
+            fontSize: "0.9rem",
           }}
         >
-          🚀 Powered by <strong>Frontial Technologies</strong>
+          Powered by <strong>Frontial Technologies</strong>
         </Link>
       </Box>
 
-    
-
-      {/* RIGHT PANEL */}
+      {/* ==================== RIGHT PANEL (Login Form) ==================== */}
       <Box
         sx={{
           flex: 1,
@@ -294,7 +253,7 @@ function Login() {
           justifyContent: "center",
           alignItems: "center",
           p: 3,
-          backgroundColor: "#f8fafc",
+          bgcolor: "#f8fafc",
         }}
       >
         {showForgot ? (
@@ -302,8 +261,16 @@ function Login() {
         ) : showSignup ? (
           <Signup onBack={() => setShowSignup(false)} />
         ) : (
-          <Card sx={{ maxWidth: 420, width: "100%", boxShadow: 6, borderRadius: 4 }}>
+          <Card
+            sx={{
+              maxWidth: 420,
+              width: "100%",
+              boxShadow: 6,
+              borderRadius: 4,
+            }}
+          >
             <CardContent sx={{ p: 4 }}>
+              {/* Header */}
               <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
                 <Box
                   sx={{
@@ -324,42 +291,63 @@ function Login() {
                 </Typography>
               </Box>
 
+              {/* Form */}
               <form onSubmit={handleLogin}>
                 <TextField
                   label="Email"
+                  type="email"
                   fullWidth
                   margin="normal"
-                  size="small"
+                  size="medium"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  autoFocus
                 />
                 <TextField
                   label="Password"
                   type="password"
                   fullWidth
                   margin="normal"
-                  size="small"
+                  size="medium"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+
                 <Button
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, py: 1.5, background: "#289DD9" }}
+                  sx={{
+                    mt: 3,
+                    py: 1.5,
+                    bgcolor: "#289DD9",
+                    "&:hover": { bgcolor: "#1e88e5" },
+                    textTransform: "none",
+                    fontSize: "1.05rem",
+                  }}
                 >
-                  <LogIn size={18} style={{ marginRight: 8 }} /> Login
+                  <LogIn size={20} style={{ marginRight: 10 }} />
+                  Login
                 </Button>
               </form>
 
+              {/* Links */}
               <Box sx={{ mt: 3, textAlign: "center" }}>
-                <Link component="button" onClick={() => setShowForgot(true)}>
+                <Link
+                  component="button"
+                  variant="body2"
+                  onClick={() => setShowForgot(true)}
+                >
                   Forgot Password?
                 </Link>{" "}
                 •{" "}
-                <Link component="button" onClick={() => setShowSignup(true)}>
+                <Link
+                  component="button"
+                  variant="body2"
+                  onClick={() => setShowSignup(true)}
+                >
                   New User? Signup
                 </Link>
               </Box>
@@ -370,5 +358,3 @@ function Login() {
     </Box>
   );
 }
-
-export default Login;

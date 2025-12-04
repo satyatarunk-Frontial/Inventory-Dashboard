@@ -95,7 +95,7 @@ const Panel = styled(Box, { shouldForwardProp: (p) => p !== "open" })(
 const IconWrap = styled(Box, {
   shouldForwardProp: (p) => p !== "active" && p !== "small",
 })(({ active, small }) => ({
-  width: small ? 40 : 46,
+  width: small ? 40 : 48,
   height: small ? 40 : 46,
   borderRadius: 12,
   display: "flex",
