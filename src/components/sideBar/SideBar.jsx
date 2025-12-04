@@ -33,7 +33,7 @@ import { useNavigate } from "react-router-dom";
 import categoriesData from "../../data/productCards.json";
 
 // Sizes
-export const SIDEBAR_WIDTH = 240;
+export const SIDEBAR_WIDTH = 230;
 export const SIDEBAR_COLLAPSED = 72;
 const NAVBAR_HEIGHT = 85;
 
@@ -78,8 +78,8 @@ const Panel = styled(Box, { shouldForwardProp: (p) => p !== "open" })(
 
 const IconWrap = styled(Box, { shouldForwardProp: (p) => p !== "active" && p !== "small" })(
   ({ active, small }) => ({
-    width: small ? 44 : 52,
-    height: small ? 44 : 52,
+    width: small ? 40 : 46,
+    height: small ? 40 : 46,
     borderRadius: 12,
     display: "flex",
     alignItems: "center",
@@ -108,7 +108,7 @@ export default function SideBar({ initialOpen = true, onToggle }) {
   const navigate = useNavigate();
 
   const categories = useMemo(() => categoriesData || [], []);
-  const colors = ["#ff6b6b", "#4ecdc4", "#45b7d1", "#f9ca24", "#6c5ce7", "#a29bfe", "#fd79a8", "#00b894"];
+  const colors = ["#1e88e5", "#e53935", "#45b7d1", "#f9ca24", "#6c5ce7", "#a29bfe", "#fd79a8", "#00b894"];
 
   useEffect(() => onToggle?.(open), [open, onToggle]);
 
@@ -134,7 +134,7 @@ export default function SideBar({ initialOpen = true, onToggle }) {
   return (
     <Root>
       <Panel open={open} aria-expanded={open}>
-        {/* small top spacer so menu doesn't touch navbar */}
+        
         <Box sx={{ height: 12 }} />
 
         <List disablePadding>
@@ -151,7 +151,8 @@ export default function SideBar({ initialOpen = true, onToggle }) {
                     component="button"
                     sx={(theme) => ({
                       borderRadius: 3,
-                      minHeight: 56,
+                      minHeight: 54,
+                      minWidth:open ?  230 : 48,
                       py: 1,
                       px: open ? 2 : 1.5,
                       gap: open ? 3 : 0,
@@ -170,7 +171,7 @@ export default function SideBar({ initialOpen = true, onToggle }) {
                           }),
                     })}
                   >
-                    <ListItemIcon sx={{ minWidth: open ? 56 : "auto", color: isActive ? PALETTE.accent : "inherit" }}>
+                    <ListItemIcon sx={{ minWidth: open ? 55  : "auto", color: isActive ? PALETTE.accent : "inherit" }}>
                       <IconWrap active={isActive} small={!open}>
                         <Icon size={22} strokeWidth={2.2} />
                       </IconWrap>

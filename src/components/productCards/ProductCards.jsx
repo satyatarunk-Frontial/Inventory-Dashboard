@@ -116,6 +116,7 @@ export default function ProductCards() {
           paddingInline: "20px",
           display: "flex",
           justifyContent: "flex-start",
+          marginLeft:"15px"
         }}>
         {initialProducts.map((cat, i) => (
           <Grid item key={i} xs={12} sm={6} md={6} lg={2}>
