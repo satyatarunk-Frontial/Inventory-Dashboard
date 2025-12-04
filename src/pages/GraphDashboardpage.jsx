@@ -42,17 +42,15 @@ export default function GraphDashboardpage() {
       sx={{
         minHeight: "100vh",
         py: 4,
-        pb: 13,
+        pb: 10,
         px: { xs: 2, md: 4 },
         background:
           "linear-gradient(180deg, #f9fafb 0%, #eef2ff 35%, #e0f2fe 100%)",
       }}>
       <Box sx={{ maxWidth: "1400px", mx: "auto" }}>
-        {/* pass both allItems (for header's local calculations) and filteredItems for graphs */}
         <GraphsHeader
           allItems={allItems}       
           items={filteredItems}  
- 
           category={globalCategory}
           setCategory={setGlobalCategory}
           date={date}
@@ -73,8 +71,8 @@ export default function GraphDashboardpage() {
         </Box>
 
         <Grid container spacing={4} sx={{ mb: 2 }}>
-          <Grid item xs={12} md={6}>
-            <PieChartGraph items={filteredItems} />
+          <Grid item xs={12} md={6} sx={{ mb: 4 }}>
+            <PieChartGraph items={filteredItems}  />
           </Grid>
           <Grid item xs={12} md={6}>
             <StockSpeedometerGraph items={filteredItems} />
