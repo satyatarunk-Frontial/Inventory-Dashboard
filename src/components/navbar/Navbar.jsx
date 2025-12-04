@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Box, Typography, Button, Stack, Avatar } from "@mui/material";
 import { User } from "lucide-react";
-import AuthDialog from "../login/login";
+import AuthDialog from "../../Auth/Login";  // Adjust the path according to your folder structure
 
  
 
