@@ -70,26 +70,34 @@ export default function Login() {
         background: "white",
       }}
     >
-      {/* ==================== LEFT PANEL (Beautiful Design) ==================== */}
+       {/* LEFT PANEL */}
       <Box
         sx={{
           flex: 1,
           minWidth: { xs: "100%", md: "50%" },
           height: "100%",
           overflow: "hidden",
+
           color: "white",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
+
           p: { xs: 2, sm: 3, md: 5, lg: 6 },
+
           background:
             "linear-gradient(135deg, #352F5C 0%, #289DD9 40%, #94C8E9 100%)",
           position: "relative",
-          "@media (max-height: 700px)": { pt: 6, pb: 6 },
+
+          /* Adjust for small height screens */
+          "@media (max-height: 700px)": {
+            pt: 6,
+            pb: 6,
+          },
         }}
       >
-        {/* Glow effects */}
+        {/* Glow elements responsive */}
         <Box
           sx={{
             position: "absolute",
@@ -103,6 +111,7 @@ export default function Login() {
             animation: "float 6s ease-in-out infinite",
           }}
         />
+
         <Box
           sx={{
             position: "absolute",
@@ -117,30 +126,31 @@ export default function Login() {
           }}
         />
 
-        {/* Floating emojis */}
+        {/* Floating Icons */}
         {[
-          { emoji: "Shopping Cart", top: "5%", left: "6%" },
-          { emoji: "Package", bottom: "5%", left: "5%" },
-          { emoji: "Money Bag", top: "7%", right: "10%" },
-          { emoji: "Chart Increasing", bottom: "10%", right: "6%" },
-        ].map((item, i) => (
+          { emoji: "🛒", top: "5%", left: "6%" },
+          { emoji: "📦", bottom: "5%", left: "5%" },
+          { emoji: "💰", top: "7%", right: "10%" },
+          { emoji: "📊", bottom: "10%", right: "6%" },
+        ].map((f, i) => (
           <Box
             key={i}
             sx={{
               position: "absolute",
-              top: item.top,
-              bottom: item.bottom,
-              left: item.left,
-              right: item.right,
+              top: f.top,
+              bottom: f.bottom,
+              left: f.left,
+              right: f.right,
               fontSize: { xs: 18, sm: 26, md: 32, lg: 36 },
               animation: `float ${6 + i}s ease-in-out infinite`,
               textShadow: "0 0 10px rgba(255,255,255,0.8)",
             }}
           >
-            {item.emoji}
+            {f.emoji}
           </Box>
         ))}
 
+        {/* Title */}
         <Typography
           variant="h3"
           sx={{
@@ -152,51 +162,69 @@ export default function Login() {
             background: "#ffffff",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
+            position: "relative",
           }}
         >
           Stock Inventory
         </Typography>
 
+        {/* Subtitle */}
         <Typography
           variant="body1"
           sx={{
-            mt: 2,
+            mt: { xs: 1.5, sm: 2 },
             textAlign: "center",
             maxWidth: 560,
-            px: 2,
-            fontSize: { xs: "0.85rem", md: "1rem" },
+            px: { xs: 1, sm: 2 },
+            fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
             opacity: 0.95,
+            textShadow: "0 0 8px rgba(255,255,255,0.6)",
           }}
         >
           Effortlessly manage inventory, track products, and optimize warehouse
           operations with a clean and intuitive interface.
         </Typography>
 
-        {/* Features grid */}
+        {/* Features */}
         <Box
           sx={{
-            mt: 5,
+            mt: { xs: 3, sm: 4, md: 5 },
             display: "grid",
-            gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
-            gap: 2,
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "1fr 1fr",
+            },
+            gap: { xs: 1.5, sm: 2 },
             width: "100%",
             maxWidth: 500,
           }}
         >
           {[
-            { emoji: "Package", title: "Products", desc: "Add, update, track items" },
-            { emoji: "Shopping Cart", title: "Orders", desc: "Manage sales" },
-            { emoji: "Chart Increasing", title: "Analytics", desc: "Monitor trends" },
-            { emoji: "Tag", title: "Pricing", desc: "Discounts & bulk" },
+            {
+              emoji: "📦",
+              title: "Products",
+              desc: "Add, update, and track items",
+            },
+            {
+              emoji: "🛒",
+              title: "Orders",
+              desc: "Manage online & offline sales",
+            },
+            { emoji: "📊", title: "Analytics", desc: "Monitor stock trends" },
+            {
+              emoji: "🏷️",
+              title: "Pricing",
+              desc: "Set discounts & bulk pricing",
+            },
           ].map((f, i) => (
             <Box
               key={i}
               sx={{
                 display: "flex",
                 alignItems: "center",
-                gap: 2,
-                p: 2,
-                borderRadius: "24px 0 24px 0",
+                gap: { xs: 1.5, md: 2 },
+                p: { xs: 1.5, md: 2 },
+                borderRadius: "24px 0px 24px 0px",
                 background: "rgba(255,255,255,0.15)",
                 backdropFilter: "blur(12px)",
                 border: "1px solid rgba(255,255,255,0.25)",
@@ -204,45 +232,60 @@ export default function Login() {
             >
               <Box
                 sx={{
-                  width: 50,
-                  height: 50,
+                  width: { xs: 38, sm: 44, md: 50 },
+                  height: { xs: 38, sm: 44, md: 50 },
                   borderRadius: "50%",
-                  bgcolor: "white",
+                  background: "#fff",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  fontSize: "1.8rem",
+                  fontSize: { xs: "1.2rem", md: "1.5rem" },
                 }}
               >
                 {f.emoji}
               </Box>
+
               <Box>
-                <Typography variant="subtitle1" fontWeight="bold">
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: { xs: "0.9rem", md: "1rem" },
+                  }}
+                >
                   {f.title}
                 </Typography>
-                <Typography variant="body2">{f.desc}</Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.85rem" } }}
+                >
+                  {f.desc}
+                </Typography>
               </Box>
             </Box>
           ))}
         </Box>
 
+        {/* Badge */}
         <Link
           href="https://www.frontial.com/"
           target="_blank"
           rel="noopener"
           underline="none"
           sx={{
-            mt: 4,
-            px: 3,
+            mt: { xs: 3, sm: 4 },
+            px: { xs: 2, md: 3 },
             py: 1,
             borderRadius: "50px",
-            background: "linear-gradient(90deg, #289DD9, #54A2D9)",
-            fontSize: "0.9rem",
+            fontSize: { xs: "0.75rem", sm: "0.85rem", md: "0.95rem" },
+            display: "inline-block",
+            background: "linear-gradient(90deg, #289DD9, #54A2D9, #94C8E9)",
           }}
         >
-          Powered by <strong>Frontial Technologies</strong>
+          🚀 Powered by <strong>Frontial Technologies</strong>
         </Link>
       </Box>
+
 
       {/* ==================== RIGHT PANEL (Login Form) ==================== */}
       <Box
