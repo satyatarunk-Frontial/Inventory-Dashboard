@@ -20,9 +20,6 @@ import {
   getAvailableDates,
 } from "./graphUtils";
 
-// replace or import CATEGORY_COLORS if you use it for chips elsewhere
-// import { CATEGORY_COLORS } from "../constants"; // if you have it
-
 export default function PieChartGraph({ items }) {
   const [activeSlice, setActiveSlice] = useState(null);
 
