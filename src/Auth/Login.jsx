@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// src/Auth/Login.jsx
+import { useState, useEffect, useContext } from "react";
+import { useNavigate, Navigate } from "react-router-dom";
 import users from "../data/users";
 import { AuthContext } from "../App";
-import { useContext } from "react";
 
 import {
   Box,
@@ -22,46 +22,59 @@ function Login() {
   const [password, setPassword] = useState("");
   const [showForgot, setShowForgot] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
+
   const navigate = useNavigate();
-  const { setIsLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+
+  // All hooks called unconditionally — ESLint happy
+  useEffect(() => {
+    if (isLoggedIn || localStorage.getItem("isLoggedIn") === "true") {
+      setIsLoggedIn(true);
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isLoggedIn, setIsLoggedIn, navigate]);
+
+  // Early return AFTER hooks
+  if (isLoggedIn) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
  const handleLogin = (e) => {
   e.preventDefault();
-
-  const user = users.find(
-    (u) => u.email === email && u.password === password
-  );
-
- 
-
-  localStorage.setItem("isLoggedIn", "true");
-  setIsLoggedIn(true);
-  navigate("/dashboard");
+  const user = users.find((u) => u.username === email && u.password === password);
+  if (user) {
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("user", JSON.stringify(user));
+    setIsLoggedIn(true);
+    navigate("/dashboard", { replace: true });
+  } else {
+    alert("Invalid email or password!");
+  }
 };
 
   return (
-   <Box
-  sx={{
-    display: "flex",
-    width: "100%",
-    height: { xs: "auto", md: "100dvh" },
-    minHeight: "100dvh",
-    overflow: "hidden",
-    flexDirection: { xs: "column", md: "row" },
-    position: { xs: "static", md: "fixed" },
-    top: { md: 0 },
-    left: { md: 0 },
-
-  }}
->
-
-      {/* LEFT PANEL */}
+    <Box
+      sx={{
+        display: "flex",
+        width: "100%",
+        height: { xs: "auto", md: "100dvh" },
+        minHeight: "100dvh",
+        overflow: "hidden",
+        flexDirection: { xs: "column", md: "row" },
+        position: { xs: "static", md: "fixed" },
+        top: 0,
+        left: 0,
+        background: "white",
+      }}
+    >
+     {/* LEFT PANEL */}
       <Box
         sx={{
           flex: 1,
           minWidth: { xs: "100%", md: "50%" },
           height: "100%",
           overflow: "hidden",
+
           color: "white",
           display: "flex",
           flexDirection: "column",
@@ -270,6 +283,8 @@ function Login() {
         </Link>
       </Box>
 
+    
+
       {/* RIGHT PANEL */}
       <Box
         sx={{
@@ -278,69 +293,46 @@ function Login() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          p: { xs: 2, sm: 3, md: 4 },
-          // backgroundColor: "#ffffff",
-          // height: "100vh",
-          // position: "relative",
-          // zIndex: 10,
+          p: 3,
+          backgroundColor: "#f8fafc",
         }}
       >
-        {/* Conditional Forms */}
         {showForgot ? (
           <ForgotPassword onBack={() => setShowForgot(false)} />
         ) : showSignup ? (
           <Signup onBack={() => setShowSignup(false)} />
         ) : (
-          <Card
-            sx={{
-              width: "100%",
-              maxWidth: 420,
-              borderRadius: 4,
-              boxShadow: 6,
-            }}
-          >
-            <CardContent sx={{ p: { xs: 2.5, sm: 3.5 } }}>
-              {/* Login Header */}
+          <Card sx={{ maxWidth: 420, width: "100%", boxShadow: 6, borderRadius: 4 }}>
+            <CardContent sx={{ p: 4 }}>
               <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
                 <Box
                   sx={{
-                    width: 38,
-                    height: 38,
+                    width: 40,
+                    height: 40,
                     borderRadius: "50%",
                     background: "linear-gradient(135deg, #289DD9, #54A2D9)",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
+                    mr: 2,
                   }}
                 >
-                  <Lock size={20} color="#fff" />
+                  <Lock size={22} color="white" />
                 </Box>
-
-                <Typography
-                  variant="h5"
-                  sx={{
-                    fontWeight: "bold",
-                    ml: 1.5,
-                    background:
-                      "linear-gradient(90deg, #352F5C, #289DD9, #54A2D9)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  }}
-                >
+                <Typography variant="h5" fontWeight="bold">
                   Sign In
                 </Typography>
               </Box>
 
-              {/* Login Form */}
               <form onSubmit={handleLogin}>
-
                 <TextField
-                  label="Username / Email"
+                  label="Email"
                   fullWidth
                   margin="normal"
                   size="small"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
                 <TextField
                   label="Password"
@@ -350,35 +342,23 @@ function Login() {
                   size="small"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
-
                 <Button
                   type="submit"
-                  variant="contained"
                   fullWidth
-                  sx={{
-                    mt: 3,
-                    py: 1.5,
-                    fontSize: { xs: "0.9rem", sm: "1rem" },
-                  }}
+                  variant="contained"
+                  sx={{ mt: 3, py: 1.5, background: "#289DD9" }}
                 >
-                  <LogIn size={18} />
-                  &nbsp;Login
+                  <LogIn size={18} style={{ marginRight: 8 }} /> Login
                 </Button>
               </form>
 
-              {/* Links */}
-              <Box
-                sx={{
-                  mt: 3,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: { xs: "0.75rem", sm: "0.85rem" },
-                }}
-              >
+              <Box sx={{ mt: 3, textAlign: "center" }}>
                 <Link component="button" onClick={() => setShowForgot(true)}>
                   Forgot Password?
-                </Link>
+                </Link>{" "}
+                •{" "}
                 <Link component="button" onClick={() => setShowSignup(true)}>
                   New User? Signup
                 </Link>

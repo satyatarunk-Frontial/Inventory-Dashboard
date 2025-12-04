@@ -1,30 +1,20 @@
 // src/components/navbar/Navbar.jsx
-import React, { useState } from "react";
-import { Box, Typography, Button, Stack, Avatar } from "@mui/material";
-import { User } from "lucide-react";
-import AuthDialog from "../../Auth/Login";  // Adjust the path according to your folder structure
-
- 
+import React from "react";
+import { Box, Typography, Button, Stack } from "@mui/material";
+import { LogOut, User } from "lucide-react";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../App";  // Adjust path if needed
 
 export default function Navbar() {
-  const [authOpen, setAuthOpen] = useState(false);
+  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  // Brand text that should change after login (default as in your design)
-  const [brandText, setBrandText] = useState("The Pickls");
-
-  function handleOpenAuth() {
-    setAuthOpen(true);
-  }
-  function handleCloseAuth() {
-    setAuthOpen(false);
-  }
-
-  // onLogin receives a user object { id, username, brandText }
-  function handleLoginSuccess(user) {
-    // If user has brandText, replace the brand with it; else fallback to default
-    setBrandText(user.brandText ? user.brandText : brandText);
-    setAuthOpen(false);
-  }
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    setIsLoggedIn(false);
+    navigate("/login", { replace: true });
+  };
 
   return (
     <Box
@@ -64,7 +54,6 @@ export default function Navbar() {
               boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
             }}
           />
-
           <Typography
             variant="h5"
             sx={{
@@ -74,11 +63,11 @@ export default function Navbar() {
               display: { xs: "none", md: "block" },
             }}
           >
-            {brandText}
+            The Pickls
           </Typography>
         </Stack>
 
-        {/* Center Title - Only visible on larger screens */}
+        {/* Center Title */}
         <Typography
           variant="h4"
           sx={{
@@ -95,38 +84,56 @@ export default function Navbar() {
           Stock Inventory Management
         </Typography>
 
-        {/* Profile Button */}
-        <Button
-          onClick={handleOpenAuth}
-          variant="contained"
-          startIcon={<User size={19} />}
-          sx={{
-            bgcolor: "white",
-            color: "#2e7d32",
-            fontWeight: 600,
-            fontSize: "0.95rem",
-            textTransform: "none",
-            borderRadius: "30px",
-            px: 3,
-            py: 1,
-            boxShadow: "0 4px 14px rgba(0, 0, 0, 0.12)",
-            transition: "all 0.2s ease",
-            "&:hover": {
+        {/* Right Side: Show Logout when logged in */}
+        {isLoggedIn ? (
+          <Button
+            onClick={handleLogout}
+            variant="contained"
+            startIcon={<LogOut size={19} />}
+            sx={{
+              bgcolor: "#d32f2f",
+              color: "white",
+              fontWeight: 600,
+              fontSize: "0.95rem",
+              textTransform: "none",
+              borderRadius: "30px",
+              px: 3,
+              py: 1,
+              boxShadow: "0 4px 14px rgba(211, 47, 47, 0.3)",
+              "&:hover": {
+                bgcolor: "#b71c1c",
+                boxShadow: "0 8px 20px rgba(211, 47, 47, 0.4)",
+              },
+            }}
+          >
+            Logout
+          </Button>
+        ) : (
+          <Button
+            onClick={() => navigate("/login")}
+            variant="contained"
+            startIcon={<User size={19} />}
+            sx={{
               bgcolor: "white",
-              boxShadow: "0 8px 20px rgba(0, 0, 0, 0.18)",
-              transform: "translateY(-2px)",
-            },
-          }}
-        >
-          Profile
-        </Button>
+              color: "#2e7d32",
+              fontWeight: 600,
+              fontSize: "0.95rem",
+              textTransform: "none",
+              borderRadius: "30px",
+              px: 3,
+              py: 1,
+              boxShadow: "0 4px 14px rgba(0, 0, 0, 0.12)",
+              "&:hover": {
+                bgcolor: "white",
+                boxShadow: "0 8px 20px rgba(0, 0, 0, 0.18)",
+                transform: "translateY(-2px)",
+              },
+            }}
+          >
+            Login
+          </Button>
+        )}
       </Stack>
-
-      <AuthDialog
-        open={authOpen}
-        onClose={handleCloseAuth}
-        onLoginSuccess={handleLoginSuccess}
-      />
     </Box>
   );
 }
