@@ -4,10 +4,7 @@ import { Box, Typography, Button, Stack } from "@mui/material";
 import { User } from "lucide-react";
 import AuthDialog from "../login/login";
 
-/**
- * Navbar that sits above the sidebar (no gap).
- * Keeps a clean gradient background (no backdrop-filter) for performance.
- */
+
 export const NAVBAR_HEIGHT = 85;
 
 export default function Navbar() {

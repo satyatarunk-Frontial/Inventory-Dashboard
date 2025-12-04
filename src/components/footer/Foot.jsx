@@ -44,9 +44,6 @@ export default function Foot({
               display: "inline-flex",
               alignItems: "center",
               textDecoration: "none",
-              
-              "&:focus": { outline: (theme) => `3px solid ${theme.palette.primary.light}`, outlineOffset: 4 },
-              "&:hover img": { transform: "translateY(-2px) scale(1.02)" },
             }}
           >
             <Box
@@ -58,8 +55,6 @@ export default function Foot({
                 justifyContent: "center",
                 borderRadius: 2,
                 overflow: "hidden",
-                boxShadow: "0 6px 20px rgba(13, 28, 63, 0.06)",
-                background: "rgba(255,255,255,0.6)",
                 p: { xs: 0.5, sm: 1 },
                 flexShrink: 0,
               }}
@@ -78,8 +73,6 @@ export default function Foot({
               />
             </Box>
           </Link>
-
-          {/* title + subtitle */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: 0.25 }}>
             <Link
               href="https://frontial.com/"
