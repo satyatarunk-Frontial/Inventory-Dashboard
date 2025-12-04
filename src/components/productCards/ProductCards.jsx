@@ -1,8 +1,8 @@
-// src/components/dashboard/ProductCards.jsx (or wherever you have it)
-
-import React, { useEffect, useMemo, useState } from "react";
+// src/components/productCards/ProductCards.jsx
+import React, { useEffect, useState,useContext } from "react";
 import { Box, Typography, Grid } from "@mui/material";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../App";
 
 import categoryData from "../../data/productCards.json";
 import AddNewProductModal from "./AddNewProductModal";
@@ -19,7 +19,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-// YOUR EXISTING CATEGORY DATA
+// EXISTING CATEGORY DATA
 import nonvegData from "../../data/nonveg.json";
 import vegetableData from "../../data/vegetable.json";
 import powdersData from "../../data/powders.json";
@@ -27,12 +27,12 @@ import milletsData from "../../data/millets.json";
 import readytoeatData from "../../data/readytoeat.json";
 import organicData from "../../data/organic.json";
 
-// YOUR NEW 3 SWEETS CATEGORIES (Just import — no hardcode!)
+// NEW SWEETS CATEGORIES
 import dryfruitLadduData from "../../data/dryfruit-laddufevi.json";
 import ragiBiscuitsData from "../../data/ragi-biscuitsfevi.json";
 import milletSweetsData from "../../data/millet-sweetsfevi.json";
 
-// ICON MAP (Added your 3 new icons)
+// ICON MAP
 const iconMap = {
   carrot: <Carrot size={22} />,
   drumstick: <Drumstick size={22} />,
@@ -45,7 +45,7 @@ const iconMap = {
   sparkles: <Sparkles size={22} />,
 };
 
-// AUTO MAP: slug → actual JSON data (Live stock count ke idi use avuthundi)
+// CATEGORY MAP
 const categoryMap = {
   nonveg: nonvegData,
   vegetable: vegetableData,
@@ -53,14 +53,12 @@ const categoryMap = {
   millets: milletsData,
   readytoeat: readytoeatData,
   organic: organicData,
-
-  // YOUR NEW 3 CATEGORIES — JUST ADDED HERE
-"dryfruit-laddu": dryfruitLadduData,        // this stays same (slug from productCards.json)
+  "dryfruit-laddu": dryfruitLadduData,
   "ragi-biscuits": ragiBiscuitsData,
   "millet-sweets": milletSweetsData,
 };
 
-// Live stock count calculator
+// Get total units
 const getTotalUnits = (items = []) => {
   if (!items || !Array.isArray(items)) return 0;
   let total = 0;
@@ -77,10 +75,19 @@ const getTotalUnits = (items = []) => {
 const LOCAL_KEY = "extraProducts_v1";
 
 export default function ProductCards() {
+  const { isLoggedIn } = useContext(AuthContext);
   const [customProducts, setCustomProducts] = useState([]);
   const [openModal, setOpenModal] = useState(false);
 
-  // Load custom products from localStorage
+  // Get current user brand
+  const storedUser = localStorage.getItem("user");
+const currentUser = storedUser ? JSON.parse(storedUser) : null;
+const userBrand = currentUser?.brandText || "Pickles";
+
+  // Filter categories based on brand
+ const visibleCards = categoryData.filter(card => card.brand === userBrand);
+
+  // Load custom products
   useEffect(() => {
     const raw = localStorage.getItem(LOCAL_KEY);
     if (raw) {
@@ -126,8 +133,8 @@ export default function ProductCards() {
           ml: "15px",
         }}
       >
-        {categoryData.map((cat, i) => {
-          const totalUnits = getTotalUnits(categoryMap[cat.slug]?.items);
+{visibleCards.map((cat, i) => {
+            const totalUnits = getTotalUnits(categoryMap[cat.slug]?.items);
 
           return (
             <Grid item key={i} xs={12} sm={6} md={4} lg={3} xl={2}>
@@ -167,7 +174,6 @@ export default function ProductCards() {
                       {iconMap[cat.icon]}
                     </Box>
 
-                    {/* LIVE COUNT FROM JSON */}
                     <Typography fontSize={35} fontWeight={700} color={cat.text || cat.color}>
                       {totalUnits > 0 ? totalUnits : "0"}
                     </Typography>

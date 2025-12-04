@@ -7,7 +7,8 @@
     "bg": "linear-gradient(135deg, #d9eaff, #b3d4ff)",
     "count": 248,
     "subtitle": "Fresh veggie assortments",
-    "slug": "vegetable"
+    "slug": "vegetable",
+    "brand": "Pickles"
   },
   {
     "label": "Non-Veg Pickles",
@@ -17,7 +18,8 @@
     "bg": "linear-gradient(135deg, #ffd4d4, #ffb3b3)",
     "count": 32,
     "subtitle": "Most loved spicy picks",
-    "slug": "nonveg"
+    "slug": "nonveg",
+    "brand": "Pickles"
   },
   {
     "label": "Delicious Powders",
@@ -27,7 +29,8 @@
     "bg": "linear-gradient(135deg, #fff3cd, #ffe49b)",
     "count": 67,
     "subtitle": "Daily spice essentials",
-    "slug": "powders"
+    "slug": "powders",
+    "brand": "Pickles"
   },
   {
     "label": "Millets Ready to Cook",
@@ -37,7 +40,8 @@
     "bg": "linear-gradient(135deg, #ddffe8, #b7ffcf)",
     "count": 149,
     "subtitle": "Easy cooking options",
-    "slug": "millets"
+    "slug": "millets",
+    "brand": "Pickles"
   },
   {
     "label": "Ready to Eat",
@@ -47,7 +51,8 @@
     "bg": "linear-gradient(135deg, #eed6ff, #d9a6fa)",
     "count": 86,
     "subtitle": "Instant tasty food",
-    "slug": "readytoeat"
+    "slug": "readytoeat",
+    "brand": "Pickles"
   },
   {
     "label": "Organic Millets",
@@ -57,6 +62,40 @@
     "bg": "linear-gradient(135deg, #e3ffe7, #c6facc)",
     "count": 143,
     "subtitle": "100% pure millet variety",
-    "slug": "organic"
+    "slug": "organic",
+    "brand": "Pickles"
+  },
+  {
+    "label": "Dry Fruit Laddu",
+    "icon": "gem",
+    "color": "#6D4C41",
+    "text": "#3E2723",
+    "bg": "linear-gradient(135deg, #EFEBE9, #D7CCC8)",
+    "count": 189,
+    "subtitle": "Premium dates, nuts & ghee energy balls",
+    "slug": "dryfruit-laddu",
+    "brand": "Fevi"
+  },
+  {
+    "label": "Ragi Biscuits",
+    "icon": "cookie",
+    "color": "#8D6E63",
+    "text": "#4E342E",
+    "bg": "linear-gradient(135deg, #EFEBE9, #BCAAA4)",
+    "count": 156,
+    "subtitle": "Crispy finger millet cookies – baked, not fried",
+    "slug": "ragi-biscuits",
+    "brand": "Fevi"
+  },
+  {
+    "label": "Millet Sweets",
+    "icon": "sparkles",
+    "color": "#388E3C",
+    "text": "#1B5E20",
+    "bg": "linear-gradient(135deg, #E8F5E9, #A5D6A7)",
+    "count": 142,
+    "subtitle": "Guilt-free jaggery sweets with siridhanya",
+    "slug": "millet-sweets",
+    "brand": "Fevi"
   }
 ]
