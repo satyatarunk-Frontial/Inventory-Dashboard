@@ -1,5 +1,7 @@
+// src/components/dashboard/ProductCards.jsx (or wherever you have it)
+
 import React, { useEffect, useMemo, useState } from "react";
-import { Box, Typography, Grid,  } from "@mui/material";
+import { Box, Typography, Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 
 import categoryData from "../../data/productCards.json";
@@ -12,9 +14,12 @@ import {
   CookingPot,
   Utensils,
   Sprout,
-  
+  Gem,
+  Cookie,
+  Sparkles,
 } from "lucide-react";
-// IMPORT ALL CATEGORY JSON FILES (AUTO UPDATE COUNTS)
+
+// YOUR EXISTING CATEGORY DATA
 import nonvegData from "../../data/nonveg.json";
 import vegetableData from "../../data/vegetable.json";
 import powdersData from "../../data/powders.json";
@@ -22,7 +27,12 @@ import milletsData from "../../data/millets.json";
 import readytoeatData from "../../data/readytoeat.json";
 import organicData from "../../data/organic.json";
 
-// ICON MAP
+// YOUR NEW 3 SWEETS CATEGORIES (Just import — no hardcode!)
+import dryfruitLadduData from "../../data/dryfruit-laddufevi.json";
+import ragiBiscuitsData from "../../data/ragi-biscuitsfevi.json";
+import milletSweetsData from "../../data/millet-sweetsfevi.json";
+
+// ICON MAP (Added your 3 new icons)
 const iconMap = {
   carrot: <Carrot size={22} />,
   drumstick: <Drumstick size={22} />,
@@ -30,14 +40,12 @@ const iconMap = {
   cookingpot: <CookingPot size={22} />,
   utensils: <Utensils size={22} />,
   sprout: <Sprout size={22} />,
-  snack: <Utensils size={22} />,
-  bowl: <Soup size={22} />,
-  curry: <CookingPot size={22} />,
-  spicy: <Sprout size={22} />,
-  sweets: <Carrot size={22} />,
+  gem: <Gem size={22} />,
+  cookie: <Cookie size={22} />,
+  sparkles: <Sparkles size={22} />,
 };
 
-// Map slug → JSON data
+// AUTO MAP: slug → actual JSON data (Live stock count ke idi use avuthundi)
 const categoryMap = {
   nonveg: nonvegData,
   vegetable: vegetableData,
@@ -45,15 +53,23 @@ const categoryMap = {
   millets: milletsData,
   readytoeat: readytoeatData,
   organic: organicData,
+
+  // YOUR NEW 3 CATEGORIES — JUST ADDED HERE
+"dryfruit-laddu": dryfruitLadduData,        // this stays same (slug from productCards.json)
+  "ragi-biscuits": ragiBiscuitsData,
+  "millet-sweets": milletSweetsData,
 };
 
-// Calculate total units dynamically
+// Live stock count calculator
 const getTotalUnits = (items = []) => {
+  if (!items || !Array.isArray(items)) return 0;
   let total = 0;
   items.forEach((item) => {
-    Object.values(item.weights).forEach((w) => {
-      total += Number(w.units || 0);
-    });
+    if (item.weights && Array.isArray(item.weights)) {
+      item.weights.forEach((w) => {
+        total += Number(w.units || 0);
+      });
+    }
   });
   return total;
 };
@@ -61,42 +77,34 @@ const getTotalUnits = (items = []) => {
 const LOCAL_KEY = "extraProducts_v1";
 
 export default function ProductCards() {
-  const initialProducts = useMemo(() => categoryData || [], []);
   const [customProducts, setCustomProducts] = useState([]);
   const [openModal, setOpenModal] = useState(false);
-   
 
+  // Load custom products from localStorage
   useEffect(() => {
     const raw = localStorage.getItem(LOCAL_KEY);
     if (raw) {
       try {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) setCustomProducts(parsed);
-      } catch {}
+      } catch (e) {
+        console.error("Failed to load custom products", e);
+      }
     }
   }, []);
 
-  const persist = (items) => {
-    setCustomProducts(items);
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(items));
-  };
-
   const handleAddProduct = (newProduct) => {
-    const slugBase =
-      newProduct.slug || newProduct.label.toLowerCase().replace(/\s+/g, "-");
+    const slugBase = newProduct.slug || newProduct.label.toLowerCase().replace(/\s+/g, "-");
     const product = {
       ...newProduct,
       id: Date.now(),
       slug: `${slugBase}-${Date.now()}`,
       isCustom: true,
     };
-
     const updated = [...customProducts, product];
-    persist(updated);
-     
+    setCustomProducts(updated);
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(updated));
   };
-
-  
 
   return (
     <>
@@ -106,7 +114,6 @@ export default function ProductCards() {
         onAdd={handleAddProduct}
       />
 
-      {/* DEFAULT PRODUCTS */}
       <Grid
         container
         spacing={2}
@@ -116,61 +123,71 @@ export default function ProductCards() {
           paddingInline: "20px",
           display: "flex",
           justifyContent: "flex-start",
-          marginLeft:"15px"
-        }}>
-        {initialProducts.map((cat, i) => (
-          <Grid item key={i} xs={12} sm={6} md={6} lg={2}>
-            <Link
-              to={`/category/${cat.slug}`}
-              style={{ textDecoration: "none", color: "inherit" }}>
-              <Box
-                sx={{
-                  width: "170px",
-                  minHeight: "140px",
-                  background: cat.bg,
-                  borderRadius: "18px",
-                  padding: "18px",
-                  boxShadow: "0px 4px 20px rgba(0,0,0,0.06)",
-                  transition: "0.3s",
-                  cursor: "pointer",
-                  "&:hover": {
-                    transform: "translateY(-3px)",
-                    boxShadow: "0px 8px 30px rgba(0,0,0,0.12)",
-                  },
-                }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <Box
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: "12px",
-                      background: `${cat.color}22`,
-                      color: cat.color,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}>
-                    {iconMap[cat.icon]}
+          ml: "15px",
+        }}
+      >
+        {categoryData.map((cat, i) => {
+          const totalUnits = getTotalUnits(categoryMap[cat.slug]?.items);
+
+          return (
+            <Grid item key={i} xs={12} sm={6} md={4} lg={3} xl={2}>
+              <Link
+                to={`/category/${cat.slug}`}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <Box
+                  sx={{
+                    width: "170px",
+                    minHeight: "140px",
+                    background: cat.bg,
+                    borderRadius: "18px",
+                    padding: "18px",
+                    boxShadow: "0px 4px 20px rgba(0,0,0,0.06)",
+                    transition: "all 0.3s ease",
+                    cursor: "pointer",
+                    "&:hover": {
+                      transform: "translateY(-5px)",
+                      boxShadow: "0px 12px 35px rgba(0,0,0,0.15)",
+                    },
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Box
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: "12px",
+                        background: `${cat.color}22`,
+                        color: cat.color,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {iconMap[cat.icon]}
+                    </Box>
+
+                    {/* LIVE COUNT FROM JSON */}
+                    <Typography fontSize={35} fontWeight={700} color={cat.text || cat.color}>
+                      {totalUnits > 0 ? totalUnits : "0"}
+                    </Typography>
                   </Box>
 
-                  {/* AUTO UPDATED COUNT */}
-                  <Typography fontSize={35} fontWeight={700}>
-                    {getTotalUnits(categoryMap[cat.slug]?.items)}
+                  <Typography sx={{ mt: 1.5 }} fontWeight={700} fontSize="0.95rem">
+                    {cat.label}
+                  </Typography>
+
+                  <Typography
+                    sx={{ mt: 1, color: cat.color, fontWeight: 700, fontSize: "0.9rem" }}
+                  >
+                    View →
                   </Typography>
                 </Box>
-
-                <Typography sx={{ mt: 1 }} fontWeight={700}>
-                  {cat.label}
-                </Typography>
-
-                <Typography sx={{ mt: 1, color: cat.color, fontWeight: 700 }}>
-                  View →
-                </Typography>
-              </Box>
-            </Link>
-          </Grid>
-        ))}
-      </Grid>     
+              </Link>
+            </Grid>
+          );
+        })}
+      </Grid>
     </>
   );
 }

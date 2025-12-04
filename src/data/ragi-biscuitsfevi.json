@@ -1,0 +1,47 @@
+{
+  "title": "Ragi Biscuits",
+  "items": [
+    {
+      "id": "RAG-000001",
+      "sku": "RAG-000001",
+      "category": "ragi-biscuits",
+      "name": "Ragi Jaggery Cookies",
+      "bgColor": "#ffffff",
+      "weights": [
+        { "gram": 200, "units": 110, "price": 90 },
+        { "gram": 400, "units": 75, "price": 170 }
+      ],
+      "salesHistory": [
+        { "date": "2025-01-18", "unitsSold": 35, "revenue": 3150 },
+        { "date": "2025-01-24", "unitsSold": 38, "revenue": 3420 }
+      ],
+      "restockHistory": [
+        { "date": "2025-01-07", "unitsAdded": 180 },
+        { "date": "2025-01-25", "unitsAdded": 150 }
+      ],
+      "weeklySummary": { "totalUnitsSold": 103, "revenue": 9270 },
+      "monthlySummary": { "totalUnitsSold": 398, "revenue": 35820 }
+    },
+    {
+      "id": "RAG-000002",
+      "sku": "RAG-000002",
+      "category": "ragi-biscuits",
+      "name": "Ragi Chocolate Biscuits",
+      "bgColor": "#ffffff",
+      "weights": [
+        { "gram": 200, "units": 95, "price": 110 },
+        { "gram": 400, "units": 62, "price": 210 }
+      ],
+      "salesHistory": [
+        { "date": "2025-01-21", "unitsSold": 42, "revenue": 4620 },
+        { "date": "2025-01-28", "unitsSold": 38, "revenue": 4180 }
+      ],
+      "restockHistory": [
+        { "date": "2025-01-12", "unitsAdded": 160 },
+        { "date": "2025-01-27", "unitsAdded": 130 }
+      ],
+      "weeklySummary": { "totalUnitsSold": 80, "revenue": 8800 },
+      "monthlySummary": { "totalUnitsSold": 312, "revenue": 34320 }
+    }
+  ]
+}

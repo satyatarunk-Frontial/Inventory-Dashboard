@@ -24,9 +24,9 @@ export default function Login() {
   const [showSignup, setShowSignup] = useState(false);
 
   const navigate = useNavigate();
-  const { isLoggedIn, login } = useContext(AuthContext); // Only login() is used
+  const { isLoggedIn, login } = useContext(AuthContext);
 
-  // If already logged in → go to dashboard
+  // Redirect if already logged in
   useEffect(() => {
     if (isLoggedIn) {
       navigate("/", { replace: true });
@@ -37,6 +37,11 @@ export default function Login() {
     return <Navigate to="/" replace />;
   }
 
+  // Get currently logged-in user (for dynamic brand text in footer)
+  const storedUser = localStorage.getItem("user");
+  const currentUser = storedUser ? JSON.parse(storedUser) : null;
+  const brandText = currentUser?.brandText || "Your Brand";
+
   const handleLogin = (e) => {
     e.preventDefault();
 
@@ -45,13 +50,9 @@ export default function Login() {
     );
 
     if (user) {
-      // This triggers context update + localStorage + redirect
-      login(user);
+      login(user); // This saves user to context + localStorage
     } else {
       alert("Invalid email or password!");
-      // Optional: clear fields
-      // setEmail("");
-      // setPassword("");
     }
   };
 
@@ -70,7 +71,7 @@ export default function Login() {
         background: "white",
       }}
     >
-       {/* LEFT PANEL */}
+      {/* LEFT PANEL */}
       <Box
         sx={{
           flex: 1,
@@ -287,7 +288,7 @@ export default function Login() {
       </Box>
 
 
-      {/* ==================== RIGHT PANEL (Login Form) ==================== */}
+      {/* RIGHT PANEL - Premium Login Form */}
       <Box
         sx={{
           flex: 1,
@@ -295,7 +296,7 @@ export default function Login() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          p: 3,
+          p: { xs: 3, md: 4 },
           bgcolor: "#f8fafc",
         }}
       >
@@ -306,53 +307,60 @@ export default function Login() {
         ) : (
           <Card
             sx={{
-              maxWidth: 420,
+              maxWidth: 460,
               width: "100%",
-              boxShadow: 6,
-              borderRadius: 4,
+              borderRadius: 5,
+              overflow: "hidden",
+              boxShadow: "0 25px 60px rgba(0,0,0,0.15)",
+              bgcolor: "white",
             }}
           >
-            <CardContent sx={{ p: 4 }}>
+            <CardContent sx={{ p: { xs: 4, md: 6 } }}>
               {/* Header */}
-              <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+              <Box sx={{ textAlign: "center", mb: 4 }}>
                 <Box
                   sx={{
-                    width: 40,
-                    height: 40,
+                    width: 90,
+                    height: 90,
                     borderRadius: "50%",
-                    background: "linear-gradient(135deg, #289DD9, #54A2D9)",
-                    display: "flex",
-                    justifyContent: "center",
+                    background: "linear-gradient(135deg, #289DD9, #1e88e5)",
+                    display: "inline-flex",
                     alignItems: "center",
-                    mr: 2,
+                    justifyContent: "center",
+                    mb: 3,
+                    boxShadow: "0 15px 35px rgba(40,157,217,0.4)",
                   }}
                 >
-                  <Lock size={22} color="white" />
+                  <Lock size={46} color="white" />
                 </Box>
-                <Typography variant="h5" fontWeight="bold">
-                  Sign In
+                <Typography variant="h4" fontWeight={800} color="#1a1a1a">
+                  Welcome Back
+                </Typography>
+                <Typography variant="body1" color="text.secondary" mt={1}>
+                  Sign in to access your inventory dashboard
                 </Typography>
               </Box>
 
               {/* Form */}
               <form onSubmit={handleLogin}>
                 <TextField
-                  label="Email"
+                  label="Email Address"
                   type="email"
                   fullWidth
-                  margin="normal"
-                  size="medium"
+                  variant="outlined"
+                  size="large"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   autoFocus
+                  sx={{ mb: 3 }}
                 />
                 <TextField
                   label="Password"
                   type="password"
                   fullWidth
-                  margin="normal"
-                  size="medium"
+                  variant="outlined"
+                  size="large"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -361,39 +369,45 @@ export default function Login() {
                 <Button
                   type="submit"
                   fullWidth
+                  size="large"
                   variant="contained"
                   sx={{
-                    mt: 3,
-                    py: 1.5,
-                    bgcolor: "#289DD9",
-                    "&:hover": { bgcolor: "#1e88e5" },
+                    mt: 4,
+                    py: 2,
+                    fontSize: "1.15rem",
+                    fontWeight: 600,
+                    borderRadius: 4,
                     textTransform: "none",
-                    fontSize: "1.05rem",
+                    background: "linear-gradient(90deg, #289DD9, #1e88e5)",
+                    boxShadow: "0 10px 30px rgba(40,157,217,0.4)",
+                    "&:hover": {
+                      background: "linear-gradient(90deg, #1e88e5, #1976d2)",
+                      transform: "translateY(-3px)",
+                      boxShadow: "0 15px 40px rgba(40,157,217,0.5)",
+                    },
+                    transition: "all 0.3s ease",
                   }}
                 >
-                  <LogIn size={20} style={{ marginRight: 10 }} />
-                  Login
+                  <LogIn size={24} style={{ marginRight: 12 }} />
+                  Sign In Securely
                 </Button>
               </form>
 
               {/* Links */}
-              <Box sx={{ mt: 3, textAlign: "center" }}>
-                <Link
-                  component="button"
-                  variant="body2"
-                  onClick={() => setShowForgot(true)}
-                >
+              <Box sx={{ mt: 4, textAlign: "center" }}>
+                <Link component="button" variant="body1" onClick={() => setShowForgot(true)} sx={{ color: "#289DD9", fontWeight: 600 }}>
                   Forgot Password?
-                </Link>{" "}
-                •{" "}
-                <Link
-                  component="button"
-                  variant="body2"
-                  onClick={() => setShowSignup(true)}
-                >
-                  New User? Signup
+                </Link>
+                <span style={{ margin: "0 12px", color: "#999" }}>•</span>
+                <Link component="button" variant="body1" onClick={() => setShowSignup(true)} sx={{ color: "#289DD9", fontWeight: 600 }}>
+                  Create Account
                 </Link>
               </Box>
+
+              {/* Footer */}
+              <Typography variant="body2" color="text.secondary" textAlign="center" mt={5}>
+                © 2025 <strong>{brandText}</strong> • Powered by Frontial Technologies
+              </Typography>
             </CardContent>
           </Card>
         )}

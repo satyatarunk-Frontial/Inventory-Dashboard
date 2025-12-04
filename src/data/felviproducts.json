@@ -1,0 +1,32 @@
+[
+  {
+    "label": "Dry Fruit Laddu",
+    "icon": "gem",
+    "color": "#6D4C41",
+    "text": "#3E2723",
+    "bg": "linear-gradient(135deg, #EFEBE9, #D7CCC8)",
+    "count": 189,
+    "subtitle": "Premium dates, nuts & ghee energy balls",
+    "slug": "dryfruit-laddu"
+  },
+  {
+    "label": "Ragi Biscuits",
+    "icon": "cookie",
+    "color": "#8D6E63",
+    "text": "#4E342E",
+    "bg": "linear-gradient(135deg, #EFEBE9, #BCAAA4)",
+    "count": 156,
+    "subtitle": "Crispy finger millet cookies – baked, not fried",
+    "slug": "ragi-biscuits"
+  },
+  {
+    "label": "Millet Sweets",
+    "icon": "sparkles",
+    "color": "#388E3C",
+    "text": "#1B5E20",
+    "bg": "linear-gradient(135deg, #E8F5E9, #A5D6A7)",
+    "count": 142,
+    "subtitle": "Guilt-free jaggery sweets with siridhanya",
+    "slug": "millet-sweets"
+  }
+]

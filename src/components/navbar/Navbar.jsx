@@ -19,14 +19,11 @@ import { useNavigate } from "react-router-dom";
 export const NAVBAR_HEIGHT = 85;
 
 export default function Navbar() {
-  // All hooks at the top — NEVER conditionally!
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
-
   const open = Boolean(anchorEl);
 
-  // Safe fallback if context is missing (should not happen)
   if (!authContext) {
     console.error("Navbar rendered outside AuthProvider");
     return null;
@@ -34,15 +31,17 @@ export default function Navbar() {
 
   const { isLoggedIn, logout } = authContext;
 
-  // If user is not logged in → don't show navbar at all (login page)
   if (!isLoggedIn) {
     return null;
   }
 
-  // Get user info
+  // Get current logged-in user from localStorage
   const storedUser = localStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : null;
+
+  // Dynamic values from user
   const displayName = user?.username?.split("@")[0] || "User";
+  const brandText = user?.brandText || "The Pickls"; // This is what you wanted!
 
   const handleAvatarClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -53,7 +52,7 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    logout(); // clears context + localStorage
+    logout();
     handleClose();
     navigate("/login", { replace: true });
   };
@@ -79,12 +78,12 @@ export default function Navbar() {
         justifyContent="space-between"
         sx={{ height: "100%", maxWidth: "1460px", mx: "auto" }}
       >
-        {/* Logo + Brand */}
+        {/* Logo + Dynamic Brand Name */}
         <Stack direction="row" alignItems="center" spacing={2}>
           <Box
             component="img"
             src="https://thepickls.com/cdn/shop/files/the_pickls.png?v=1704872288"
-            alt="The Pickls"
+            alt={brandText}
             sx={{
               width: { xs: 44, sm: 52 },
               height: { xs: 44, sm: 52 },
@@ -99,9 +98,10 @@ export default function Navbar() {
               fontWeight: 800,
               color: "#13331f",
               display: { xs: "none", md: "block" },
+              letterSpacing: "0.5px",
             }}
           >
-            The Pickls
+            {brandText}  {/* ← This changes per user now! */}
           </Typography>
         </Stack>
 
@@ -122,7 +122,7 @@ export default function Navbar() {
           Stock Inventory Management
         </Typography>
 
-        {/* User Avatar Dropdown */}
+        {/* Avatar Dropdown */}
         <Tooltip title="Account settings">
           <IconButton onClick={handleAvatarClick}>
             <Avatar
