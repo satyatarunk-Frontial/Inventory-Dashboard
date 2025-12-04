@@ -1,21 +1,13 @@
-import "./App.css";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  Outlet,
-} from "react-router-dom";
-
-import Navbar from "./components/navbar/Navbar";
-import StockCategoryPage from "./pages/StockCategoryPage";
-import GraphsDashboardPage from "./pages/GraphDashboardpage";
-import Login from "./Auth/Login";
-
-import React, { createContext, useEffect, useState, useContext } from "react";
-
+import React, { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
+import SideBar, { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED } from "./components/sideBar/SideBar";
+import Navbar, { NAVBAR_HEIGHT } from "./components/navbar/Navbar";
+import ProductCards from "./components/productCards/ProductCards";
+import GraphsDashboardPage from "./pages/GraphDashboardpage";
+import StockCategoryPage from "./pages/StockCategoryPage";
+import Foot from "./components/footer/Foot";
+import "./App.css";
 
 // ----------------------
 // Auth Context
@@ -65,43 +57,54 @@ const theme = createTheme({
   },
 });
 
+export default function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-function App() {
+  const contentMarginLeft = sidebarOpen ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED;
+
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
       <BrowserRouter>
-        <Routes>
-          {/* Login Page (No Navbar) */}
-          <Route path="/login" element={<Login />} />
+        <SideBar initialOpen={sidebarOpen} onToggle={(v) => setSidebarOpen(v)} />
+        <div
+          style={{
+            marginLeft: contentMarginLeft,
+            transition: "margin-left 180ms linear",
+            minHeight: "100vh",
+            paddingTop: NAVBAR_HEIGHT,
+            boxSizing: "border-box",
+            background: "var(--app-bg, #f6fbfb)",
+          }}
+        >
+          <Navbar />
 
-          {/* Protected Routes (With Navbar) */}
-          <Route element={<ProtectedRoute />}>
-            <Route
-              element={
-                <>
-                  <Navbar />
-                  <Outlet />
-                </>
-              }
-            >
-              <Route path="/dashboard" element={<GraphsDashboardPage />} />
-              <Route path="/stocks" element={<StockCategoryPage />} />
-            </Route>
-          </Route>
+          <main
+            style={{
+              width: "100%",
+              maxWidth: 1560,
+              margin: "0 auto",
+              paddingTop: "24px",
+              paddingLeft:"22px",
+              boxSizing: "border-box",
+            }}
+          >
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <>
+                    <ProductCards />
+                    <GraphsDashboardPage />
+                  </>
+                }
+              />
+              <Route path="/category/:type" element={<StockCategoryPage />} />
+            </Routes>
+          </main>
 
-          {/* Default Route */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
-        </Routes>
+          <Foot />
+        </div>
       </BrowserRouter>
     </ThemeProvider>
-  );
-}
-
-export default function WrappedApp() {
-  return (
-    <AuthProvider>
-      <App />
-    </AuthProvider>
   );
 }

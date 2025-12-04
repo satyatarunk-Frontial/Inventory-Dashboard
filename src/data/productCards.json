@@ -1,6 +1,6 @@
 [
   {
-    "label": "Vegetable Pickles",
+    "label": "Veg Pickles",
     "icon": "carrot",
     "color": "#1e88e5",
     "text": "#0d3a68",
@@ -10,7 +10,7 @@
     "slug": "vegetable"
   },
   {
-    "label": "Non Veg Pickles",
+    "label": "Non-Veg Pickles",
     "icon": "drumstick",
     "color": "#e53935",
     "text": "#5c1614",

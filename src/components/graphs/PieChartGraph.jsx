@@ -8,8 +8,6 @@ import {
   Typography,
   Box,
   Fade,
-  ToggleButtonGroup,
-  ToggleButton,
   TextField,
   IconButton,
   alpha,
@@ -22,9 +20,6 @@ import {
   getAvailableDates,
 } from "./graphUtils";
 
-// replace or import CATEGORY_COLORS if you use it for chips elsewhere
-// import { CATEGORY_COLORS } from "../constants"; // if you have it
-
 export default function PieChartGraph({ items }) {
   const [activeSlice, setActiveSlice] = useState(null);
 
@@ -36,8 +31,7 @@ export default function PieChartGraph({ items }) {
   const [committedCustom, setCommittedCustom] = useState(null);
 
   const availableDates = useMemo(() => getAvailableDates(items), [items]);
-  const minAvailable = availableDates[0] || "";
-  const maxAvailable = availableDates[availableDates.length - 1] || "";
+
 
   const trimmed = useMemo(() => {
     if (committedCustom) {
@@ -73,7 +67,6 @@ export default function PieChartGraph({ items }) {
     setCustomOpen(false);
   };
 
-  // stopPropagation helper for inline handlers
   const stop = (e) => {
     e.stopPropagation();
     if (e.nativeEvent) e.nativeEvent.stopImmediatePropagation && e.nativeEvent.stopImmediatePropagation();
@@ -87,7 +80,8 @@ export default function PieChartGraph({ items }) {
       sx={{
         background: "#fff",
         borderRadius: 3.5,
-        p: 3.5,
+        p: 3,
+        width: "85%",
         boxShadow: "0 12px 40px rgba(0,0,0,0.08)",
         height: "100%",
         display: "flex",
