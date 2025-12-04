@@ -47,7 +47,7 @@ export default function App() {
               width: "100%",
               maxWidth: 1460,
               margin: "0 auto",
-              padding: "20px 24px",
+              // padding: "20px 24px",
               boxSizing: "border-box",
             }}
           >
