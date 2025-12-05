@@ -1,8 +1,8 @@
-// src/Auth/Login.jsx
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import users from "../data/users";
 import { AuthContext } from "../App";
+import { styled } from "@mui/material/styles";
 
 import {
   Box,
@@ -24,9 +24,8 @@ export default function Login() {
   const [showSignup, setShowSignup] = useState(false);
 
   const navigate = useNavigate();
-  const { isLoggedIn, login } = useContext(AuthContext); // Only login() is used
+  const { isLoggedIn, login } = useContext(AuthContext);
 
-  // If already logged in → go to dashboard
   useEffect(() => {
     if (isLoggedIn) {
       navigate("/", { replace: true });
@@ -37,6 +36,10 @@ export default function Login() {
     return <Navigate to="/" replace />;
   }
 
+  const storedUser = localStorage.getItem("user");
+  const currentUser = storedUser ? JSON.parse(storedUser) : null;
+  const brandText = currentUser?.brandText || "Your Brand";
+
   const handleLogin = (e) => {
     e.preventDefault();
 
@@ -45,15 +48,56 @@ export default function Login() {
     );
 
     if (user) {
-      // This triggers context update + localStorage + redirect
       login(user);
     } else {
       alert("Invalid email or password!");
-      // Optional: clear fields
-      // setEmail("");
-      // setPassword("");
     }
   };
+
+  const GoogleSvg = () => (
+    <svg width="22" height="22" viewBox="0 0 48 48">
+      <path
+        fill="#EA4335"
+        d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.7 30.47 0 24 0 14.62 0 6.51 5.38 2.55 13.22l7.98 6.19C12.64 13.16 17.88 9.5 24 9.5z"
+      />
+      <path
+        fill="#4285F4"
+        d="M46.1 24.55c0-1.62-.15-3.18-.39-4.68H24v9.04h12.6c-.54 2.92-2.12 5.38-4.53 7.09l7.04 5.49C43.77 37.16 46.1 31.34 46.1 24.55z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M10.53 28.41c-.46-1.37-.72-2.83-.72-4.41s.26-3.04.72-4.41L2.55 13.22C.91 16.55 0 20.14 0 23.99s.91 7.44 2.55 10.77l7.98-6.19z"
+      />
+      <path
+        fill="#34A853"
+        d="M24 47.98c6.48 0 11.94-2.13 15.92-5.74l-7.04-5.49c-2.02 1.36-4.62 2.16-8.88 2.16-6.12 0-11.36-3.66-13.47-8.91l-7.98 6.19C6.51 42.62 14.62 47.98 24 47.98z"
+      />
+    </svg>
+  );
+
+  const handleGoogleLogin = () => {
+    window.location.href = "https://accounts.google.com";
+  };
+
+  const GoogleButton = styled(Button)({
+    marginTop: "28px",
+    width: "100%",
+    maxWidth: "260px",
+    padding: "10px 0",
+    borderRadius: "50px",
+    textTransform: "none",
+    borderColor: "#d1d5db",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    "&:hover": {
+      borderColor: "#D9282F",
+      backgroundColor: "#fff",
+    },
+  });
 
   return (
     <Box
@@ -70,13 +114,18 @@ export default function Login() {
         background: "white",
       }}
     >
-       {/* LEFT PANEL */}
+      {/* LEFT PANEL */}
       <Box
         sx={{
           flex: 1,
-          minWidth: { xs: "100%", md: "50%" },
-          height: "100%",
-          overflow: "hidden",
+          width: { xs: "100%", md: "50%" },
+
+          height: { xs: "65vh", sm: "68vh", md: "100dvh" },
+          overflowY: { xs: "auto", md: "hidden" },
+          overflowX: "hidden",
+
+          maxWidth: { xs: "90%", sm: "85%", md: "100%" },
+          mx: "auto",
 
           color: "white",
           display: "flex",
@@ -89,12 +138,6 @@ export default function Login() {
           background:
             "linear-gradient(135deg, #352F5C 0%, #289DD9 40%, #94C8E9 100%)",
           position: "relative",
-
-          /* Adjust for small height screens */
-          "@media (max-height: 700px)": {
-            pt: 6,
-            pb: 6,
-          },
         }}
       >
         {/* Glow elements responsive */}
@@ -126,29 +169,26 @@ export default function Login() {
           }}
         />
 
-        {/* Floating Icons */}
-        {[
-          { emoji: "🛒", top: "5%", left: "6%" },
-          { emoji: "📦", bottom: "5%", left: "5%" },
-          { emoji: "💰", top: "7%", right: "10%" },
-          { emoji: "📊", bottom: "10%", right: "6%" },
-        ].map((f, i) => (
-          <Box
-            key={i}
-            sx={{
-              position: "absolute",
-              top: f.top,
-              bottom: f.bottom,
-              left: f.left,
-              right: f.right,
-              fontSize: { xs: 18, sm: 26, md: 32, lg: 36 },
-              animation: `float ${6 + i}s ease-in-out infinite`,
-              textShadow: "0 0 10px rgba(255,255,255,0.8)",
+        <Box
+          sx={{
+            width: { xs: 90, sm: 120, md: 150 },
+            height: { xs: 90, sm: 120, md: 150 },
+            mb: 3,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src="/image.jpg"
+            alt="Logo"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
             }}
-          >
-            {f.emoji}
-          </Box>
-        ))}
+          />
+        </Box>
 
         {/* Title */}
         <Typography
@@ -286,17 +326,24 @@ export default function Login() {
         </Link>
       </Box>
 
-
-      {/* ==================== RIGHT PANEL (Login Form) ==================== */}
+      {/* RIGHT PANEL - Premium Login Form */}
       <Box
         sx={{
           flex: 1,
-          minWidth: { xs: "100%", md: "50%" },
+          width: { xs: "100%", md: "50%" },
+
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          p: 3,
+
+          p: { xs: 3, md: 4 },
           bgcolor: "#f8fafc",
+
+          maxWidth: { xs: "90%", sm: "85%", md: "100%" },
+          mx: "auto",
+
+          height: { xs: "auto", md: "85vh", lg: "80vh", xl: "100vh" },
+          alignSelf: { md: "center" },
         }}
       >
         {showForgot ? (
@@ -306,53 +353,60 @@ export default function Login() {
         ) : (
           <Card
             sx={{
-              maxWidth: 420,
+              maxWidth: 460,
               width: "100%",
-              boxShadow: 6,
-              borderRadius: 4,
+              borderRadius: 5,
+              overflow: "hidden",
+              boxShadow: "0 25px 60px rgba(0,0,0,0.15)",
+              bgcolor: "white",
             }}
           >
-            <CardContent sx={{ p: 4 }}>
+            <CardContent sx={{ p: { xs: 4, md: 6 } }}>
               {/* Header */}
-              <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+              <Box sx={{ textAlign: "center", mb: 4 }}>
                 <Box
                   sx={{
-                    width: 40,
-                    height: 40,
+                    width: 90,
+                    height: 90,
                     borderRadius: "50%",
-                    background: "linear-gradient(135deg, #289DD9, #54A2D9)",
-                    display: "flex",
-                    justifyContent: "center",
+                    background: "linear-gradient(135deg, #289DD9, #1e88e5)",
+                    display: "inline-flex",
                     alignItems: "center",
-                    mr: 2,
+                    justifyContent: "center",
+                    mb: 3,
+                    boxShadow: "0 15px 35px rgba(40,157,217,0.4)",
                   }}
                 >
-                  <Lock size={22} color="white" />
+                  <Lock size={46} color="white" />
                 </Box>
-                <Typography variant="h5" fontWeight="bold">
+                <Typography variant="h4" fontWeight={800} color="#1a1a1a">
                   Sign In
+                </Typography>
+                <Typography variant="body1" color="text.secondary" mt={1}>
+                  Sign in to access your inventory dashboard
                 </Typography>
               </Box>
 
               {/* Form */}
               <form onSubmit={handleLogin}>
                 <TextField
-                  label="Email"
+                  label="Email Address"
                   type="email"
                   fullWidth
-                  margin="normal"
-                  size="medium"
+                  variant="outlined"
+                  size="large"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   autoFocus
+                  sx={{ mb: 3 }}
                 />
                 <TextField
                   label="Password"
                   type="password"
                   fullWidth
-                  margin="normal"
-                  size="medium"
+                  variant="outlined"
+                  size="large"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -361,39 +415,63 @@ export default function Login() {
                 <Button
                   type="submit"
                   fullWidth
+                  size="large"
                   variant="contained"
                   sx={{
-                    mt: 3,
-                    py: 1.5,
-                    bgcolor: "#289DD9",
-                    "&:hover": { bgcolor: "#1e88e5" },
+                    mt: 4,
+                    py: 2,
+                    fontSize: "1.15rem",
+                    fontWeight: 600,
+                    borderRadius: 4,
                     textTransform: "none",
-                    fontSize: "1.05rem",
+                    background: "linear-gradient(90deg, #289DD9, #1e88e5)",
+                    boxShadow: "0 10px 30px rgba(40,157,217,0.4)",
+                    "&:hover": {
+                      background: "linear-gradient(90deg, #1e88e5, #1976d2)",
+                      transform: "translateY(-3px)",
+                      boxShadow: "0 15px 40px rgba(40,157,217,0.5)",
+                    },
+                    transition: "all 0.3s ease",
                   }}
                 >
-                  <LogIn size={20} style={{ marginRight: 10 }} />
-                  Login
+                  <LogIn size={24} style={{ marginRight: 12 }} />
+                  Sign In
                 </Button>
               </form>
 
               {/* Links */}
-              <Box sx={{ mt: 3, textAlign: "center" }}>
+              <Box sx={{ mt: 4, textAlign: "center" }}>
                 <Link
                   component="button"
-                  variant="body2"
+                  variant="body1"
                   onClick={() => setShowForgot(true)}
+                  sx={{ color: "#289DD9", fontWeight: 600 }}
                 >
                   Forgot Password?
-                </Link>{" "}
-                •{" "}
+                </Link>
+                <span style={{ margin: "0 12px", color: "#999" }}>•</span>
                 <Link
                   component="button"
-                  variant="body2"
+                  variant="body1"
                   onClick={() => setShowSignup(true)}
+                  sx={{ color: "#289DD9", fontWeight: 600 }}
                 >
-                  New User? Signup
+                  Sign Up
                 </Link>
               </Box>
+
+              <div
+                style={{
+                  marginTop: "auto",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <GoogleButton onClick={handleGoogleLogin}>
+                  <GoogleSvg />{" "}
+                  <span style={{ marginLeft: 8 }}>Login with Google</span>
+                </GoogleButton>
+              </div>
             </CardContent>
           </Card>
         )}

@@ -19,14 +19,11 @@ import { useNavigate } from "react-router-dom";
 export const NAVBAR_HEIGHT = 85;
 
 export default function Navbar() {
-  // All hooks at the top — NEVER conditionally!
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
-
   const open = Boolean(anchorEl);
 
-  // Safe fallback if context is missing (should not happen)
   if (!authContext) {
     console.error("Navbar rendered outside AuthProvider");
     return null;
@@ -34,15 +31,23 @@ export default function Navbar() {
 
   const { isLoggedIn, logout } = authContext;
 
-  // If user is not logged in → don't show navbar at all (login page)
   if (!isLoggedIn) {
     return null;
   }
 
-  // Get user info
+  // Get current logged-in user from localStorage
   const storedUser = localStorage.getItem("user");
   const user = storedUser ? JSON.parse(storedUser) : null;
+
+  // Dynamic values from user
   const displayName = user?.username?.split("@")[0] || "User";
+  const brandText = user?.brandText || "The Pickls";
+
+  // DYNAMIC LOGO - This will automatically pick the correct one
+  const logoUrl =
+    brandText === "Fevi"
+      ? "/By The fevi.png"   // Your exact filename (with space and capital letters)
+      : "https://thepickls.com/cdn/shop/files/the_pickls.png?v=1704872288";
 
   const handleAvatarClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -53,7 +58,7 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    logout(); // clears context + localStorage
+    logout();
     handleClose();
     navigate("/login", { replace: true });
   };
@@ -70,27 +75,33 @@ export default function Navbar() {
         background: "linear-gradient(180deg, #FFFFFF 0%, #F8FBFB 100%)",
         borderBottom: "1px solid rgba(0,0,0,0.04)",
         boxShadow: "0 6px 18px rgba(12,24,48,0.04)",
-        px: { xs: 2, sm: 4 },
+        px: { xs: 1, sm: 2 },
       }}
     >
       <Stack
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        sx={{ height: "100%", maxWidth: "1460px", mx: "auto" }}
+        sx={{
+          height: "100%",
+         
+          position: "relative", // ← THIS IS REQUIRED for perfect centering
+        }}
       >
-        {/* Logo + Brand */}
+        {/* Logo + Dynamic Brand Name - Far Left */}
         <Stack direction="row" alignItems="center" spacing={2}>
           <Box
             component="img"
-            src="https://thepickls.com/cdn/shop/files/the_pickls.png?v=1704872288"
-            alt="The Pickls"
+            src={logoUrl}
+            alt={brandText}
             sx={{
-              width: { xs: 44, sm: 52 },
-              height: { xs: 44, sm: 52 },
+              width: { xs: 48, sm: 56 },
+              height: { xs: 48, sm: 56 },
               borderRadius: "50%",
-              objectFit: "cover",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              objectFit: "contain",
+              background: "white",
+              p: 0.5,
+              boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
             }}
           />
           <Typography
@@ -99,30 +110,33 @@ export default function Navbar() {
               fontWeight: 800,
               color: "#13331f",
               display: { xs: "none", md: "block" },
+              letterSpacing: "0.8px",
             }}
           >
-            The Pickls
+            {brandText}
           </Typography>
         </Stack>
 
-        {/* Center Title */}
+        {/* TRUE CENTER TITLE - Perfectly centered no matter what */}
         <Typography
           variant="h5"
           sx={{
             position: "absolute",
-            left: 60,
-            right: 60,
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
             textAlign: "center",
             fontWeight: 600,
             color: "#153a1f",
             pointerEvents: "none",
+            whiteSpace: "nowrap",
             display: { xs: "none", lg: "block" },
           }}
         >
           Stock Inventory Management
         </Typography>
 
-        {/* User Avatar Dropdown */}
+        {/* Avatar Dropdown - Far Right */}
         <Tooltip title="Account settings">
           <IconButton onClick={handleAvatarClick}>
             <Avatar

@@ -1,0 +1,47 @@
+{
+  "title": "Millet Sweets",
+  "items": [
+    {
+      "id": "MLS-000001",
+      "sku": "MLS-000001",
+      "category": "millet-sweets",
+      "name": "Foxtail Millet Mysore Pak",
+      "bgColor": "#ffffff",
+      "weights": [
+        { "gram": 250, "units": 78, "price": 140 },
+        { "gram": 500, "units": 48, "price": 270 }
+      ],
+      "salesHistory": [
+        { "date": "2025-01-19", "unitsSold": 25, "revenue": 3500 },
+        { "date": "2025-01-26", "unitsSold": 28, "revenue": 3920 }
+      ],
+      "restockHistory": [
+        { "date": "2025-01-09", "unitsAdded": 110 },
+        { "date": "2025-01-24", "unitsAdded": 95 }
+      ],
+      "weeklySummary": { "totalUnitsSold": 53, "revenue": 7420 },
+      "monthlySummary": { "totalUnitsSold": 208, "revenue": 29120 }
+    },
+    {
+      "id": "MLS-000002",
+      "sku": "MLS-000002",
+      "category": "millet-sweets",
+      "name": "Ragi Jaggery Laddu",
+      "bgColor": "#ffffff",
+      "weights": [
+        { "gram": 250, "units": 82, "price": 120 },
+        { "gram": 500, "units": 55, "price": 230 }
+      ],
+      "salesHistory": [
+        { "date": "2025-01-22", "unitsSold": 30, "revenue": 3600 },
+        { "date": "2025-01-29", "unitsSold": 27, "revenue": 3240 }
+      ],
+      "restockHistory": [
+        { "date": "2025-01-11", "unitsAdded": 130 },
+        { "date": "2025-01-28", "unitsAdded": 100 }
+      ],
+      "weeklySummary": { "totalUnitsSold": 57, "revenue": 6840 },
+      "monthlySummary": { "totalUnitsSold": 224, "revenue": 26880 }
+    }
+  ]
+}
