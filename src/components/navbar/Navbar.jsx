@@ -41,7 +41,13 @@ export default function Navbar() {
 
   // Dynamic values from user
   const displayName = user?.username?.split("@")[0] || "User";
-  const brandText = user?.brandText || "The Pickls"; // This is what you wanted!
+  const brandText = user?.brandText || "The Pickls";
+
+  // DYNAMIC LOGO - This will automatically pick the correct one
+  const logoUrl =
+    brandText === "Fevi"
+      ? "/By The fevi.png"   // Your exact filename (with space and capital letters)
+      : "https://thepickls.com/cdn/shop/files/the_pickls.png?v=1704872288";
 
   const handleAvatarClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -69,27 +75,33 @@ export default function Navbar() {
         background: "linear-gradient(180deg, #FFFFFF 0%, #F8FBFB 100%)",
         borderBottom: "1px solid rgba(0,0,0,0.04)",
         boxShadow: "0 6px 18px rgba(12,24,48,0.04)",
-        px: { xs: 2, sm: 4 },
+        px: { xs: 1, sm: 2 },
       }}
     >
       <Stack
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        sx={{ height: "100%", maxWidth: "1460px", mx: "auto" }}
+        sx={{
+          height: "100%",
+         
+          position: "relative", // ← THIS IS REQUIRED for perfect centering
+        }}
       >
-        {/* Logo + Dynamic Brand Name */}
+        {/* Logo + Dynamic Brand Name - Far Left */}
         <Stack direction="row" alignItems="center" spacing={2}>
           <Box
             component="img"
-            src="https://thepickls.com/cdn/shop/files/the_pickls.png?v=1704872288"
+            src={logoUrl}
             alt={brandText}
             sx={{
-              width: { xs: 44, sm: 52 },
-              height: { xs: 44, sm: 52 },
+              width: { xs: 48, sm: 56 },
+              height: { xs: 48, sm: 56 },
               borderRadius: "50%",
-              objectFit: "cover",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              objectFit: "contain",
+              background: "white",
+              p: 0.5,
+              boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
             }}
           />
           <Typography
@@ -98,31 +110,33 @@ export default function Navbar() {
               fontWeight: 800,
               color: "#13331f",
               display: { xs: "none", md: "block" },
-              letterSpacing: "0.5px",
+              letterSpacing: "0.8px",
             }}
           >
-            {brandText}  {/* ← This changes per user now! */}
+            {brandText}
           </Typography>
         </Stack>
 
-        {/* Center Title */}
+        {/* TRUE CENTER TITLE - Perfectly centered no matter what */}
         <Typography
           variant="h5"
           sx={{
             position: "absolute",
-            left: 60,
-            right: 60,
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
             textAlign: "center",
             fontWeight: 600,
             color: "#153a1f",
             pointerEvents: "none",
+            whiteSpace: "nowrap",
             display: { xs: "none", lg: "block" },
           }}
         >
           Stock Inventory Management
         </Typography>
 
-        {/* Avatar Dropdown */}
+        {/* Avatar Dropdown - Far Right */}
         <Tooltip title="Account settings">
           <IconButton onClick={handleAvatarClick}>
             <Avatar

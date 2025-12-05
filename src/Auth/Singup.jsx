@@ -18,8 +18,19 @@ function Signup({ onBack }) {
 
   const handleSignup = (e) => {
     e.preventDefault();
+
+    if (!form.name || !form.email || !form.password) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    alert("Saved successfully!");
+
     console.log("Signup data:", form);
-    // Call backend later
+
+    setForm({ name: "", email: "", password: "" });
+
+   
   };
 
   return (

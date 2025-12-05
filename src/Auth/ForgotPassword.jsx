@@ -14,7 +14,17 @@ function ForgotPassword({ onBack }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!email) {
+      alert("Please enter your email");
+      return;
+    }
+
+    alert("Reset link sent to your email!");
+
     console.log("Password reset request for:", email);
+
+    setEmail("");
   };
 
   return (
