@@ -1,5 +1,7 @@
 // src/App.js
 import React, { useState, createContext, useContext, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
 import {
   BrowserRouter,
   Routes,
@@ -14,6 +16,7 @@ import Navbar, { NAVBAR_HEIGHT } from "./components/navbar/Navbar";
 import ProductCards from "./components/productCards/ProductCards";
 import GraphsDashboardPage from "./pages/GraphDashboardpage";
 import StockCategoryPage from "./pages/StockCategoryPage";
+import Settings from "./components/settings/settings";
 import Foot from "./components/footer/Foot";
 import Login from "./Auth/Login";
 import "./App.css";
@@ -49,6 +52,19 @@ function AuthProvider({ children }) {
     return () => window.removeEventListener("storage", handler);
   }, []);
 
+  // Load saved theme on refresh
+  useEffect(() => {
+    const savedTheme = JSON.parse(localStorage.getItem("customTheme"));
+
+    if (savedTheme) {
+      document.body.style.background = savedTheme.bgColor;
+      document.body.style.boxShadow =
+        `${savedTheme.boxShadowValue} ${savedTheme.boxShadowColor}`;
+      document.body.style.border =
+        `${savedTheme.borderWidth} ${savedTheme.borderStyle} ${savedTheme.borderColor}`;
+    }
+  }, []);
+
   return (
     <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
       {children}
@@ -65,9 +81,14 @@ function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const marginLeft = sidebarOpen ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED;
 
+  // Hide footer ONLY on Settings page
+  const location = useLocation();
+  const hideFooter = location.pathname === "/settings";
+
   return (
     <>
       <SideBar initialOpen={sidebarOpen} onToggle={setSidebarOpen} />
+
       <div
         style={{
           marginLeft,
@@ -78,10 +99,13 @@ function DashboardLayout() {
         }}
       >
         <Navbar />
+
         <main style={{ maxWidth: 1560, margin: "0 auto", padding: "24px 22px" }}>
           <Outlet />
         </main>
-        <Foot />
+
+        {/* Footer Hidden Only on Settings Page */}
+        {!hideFooter && <Foot />}
       </div>
     </>
   );
@@ -120,7 +144,11 @@ export default function App() {
                     </>
                   }
                 />
+
                 <Route path="/category/:type" element={<StockCategoryPage />} />
+
+                {/* SETTINGS PAGE */}
+                <Route path="/settings" element={<Settings />} />
               </Route>
             </Route>
 
