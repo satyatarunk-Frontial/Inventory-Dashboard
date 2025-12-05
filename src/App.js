@@ -1,25 +1,24 @@
 // src/App.js
 import React, { useState, createContext, useContext, useEffect } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Outlet,
-  Navigate,
-} from "react-router-dom";
+import { useLocation, BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import "./Global/themeLoader";
 
 import SideBar, { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED } from "./components/sideBar/SideBar";
 import Navbar, { NAVBAR_HEIGHT } from "./components/navbar/Navbar";
 import ProductCards from "./components/productCards/ProductCards";
 import GraphsDashboardPage from "./pages/GraphDashboardpage";
 import StockCategoryPage from "./pages/StockCategoryPage";
+import Settings from "./components/settings/settings";
 import Foot from "./components/footer/Foot";
 import Login from "./Auth/Login";
 import ProfilePage from "./pages/ProfilePage";
 
 import "./App.css";
 
+// =========================
+// AUTH CONTEXT
+// =========================
 export const AuthContext = createContext(null);
 
 function AuthProvider({ children }) {
@@ -32,7 +31,7 @@ function AuthProvider({ children }) {
     return saved ? JSON.parse(saved) : null;
   });
 
-  // AGENTS STATE — moved INSIDE AuthProvider
+  // ⭐ AGENTS STATE (second file)
   const [agents, setAgents] = useState(() => {
     const saved = localStorage.getItem("agents");
     return saved ? JSON.parse(saved) : [];
@@ -44,11 +43,27 @@ function AuthProvider({ children }) {
     localStorage.setItem("agents", JSON.stringify(updated));
   };
 
-  const login = (userData) => {
+  const updateAgent = (agentId, updatedData) => {
+    const updated = agents.map((a) =>
+      a.id === agentId ? { ...a, ...updatedData } : a
+    );
+    setAgents(updated);
+    localStorage.setItem("agents", JSON.stringify(updated));
+  };
+
+  const deleteAgent = (id) => {
+    const updated = agents.filter((a) => a.id !== id);
+    setAgents(updated);
+    localStorage.setItem("agents", JSON.stringify(updated));
+  };
+
+  const login = (userData = null) => {
     localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("user", JSON.stringify(userData));
+    if (userData) {
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
+    }
     setIsLoggedIn(true);
-    setUser(userData);
   };
 
   const logout = () => {
@@ -64,34 +79,28 @@ function AuthProvider({ children }) {
     setUser(updated);
     window.dispatchEvent(new Event("userUpdated"));
   };
-  const updateAgent = (agentId, updatedData) => {
-  const updated = agents.map((a) =>
-    a.id === agentId ? { ...a, ...updatedData } : a
-  );
-  setAgents(updated);
-  localStorage.setItem("agents", JSON.stringify(updated));
-};
 
-const deleteAgent = (id) => {
-  const updated = agents.filter(a => a.id !== id);
-  setAgents(updated);
-  localStorage.setItem("agents", JSON.stringify(updated));
-};
-
+  // Sync login/user/agents across tabs
   useEffect(() => {
-    const handleStorage = (e) => {
-      if (e.key === "isLoggedIn") {
-        setIsLoggedIn(e.newValue === "true");
-      }
-      if (e.key === "user") {
-        setUser(e.newValue ? JSON.parse(e.newValue) : null);
-      }
-      if (e.key === "agents") {
-        setAgents(e.newValue ? JSON.parse(e.newValue) : []);
-      }
+    const handler = (e) => {
+      if (e.key === "isLoggedIn") setIsLoggedIn(e.newValue === "true");
+      if (e.key === "user") setUser(e.newValue ? JSON.parse(e.newValue) : null);
+      if (e.key === "agents") setAgents(e.newValue ? JSON.parse(e.newValue) : []);
     };
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, []);
+
+  // Load custom theme on refresh (from first file)
+  useEffect(() => {
+    const savedTheme = JSON.parse(localStorage.getItem("customTheme"));
+    if (savedTheme) {
+      document.body.style.background = savedTheme.bgColor;
+      document.body.style.boxShadow =
+        `${savedTheme.boxShadowValue} ${savedTheme.boxShadowColor}`;
+      document.body.style.border =
+        `${savedTheme.borderWidth} ${savedTheme.borderStyle} ${savedTheme.borderColor}`;
+    }
   }, []);
 
   return (
@@ -102,10 +111,10 @@ const deleteAgent = (id) => {
         login,
         logout,
         updateUser,
-        agents,        
+        agents,
         addAgent,
         updateAgent,
-  deleteAgent,     
+        deleteAgent,
       }}
     >
       {children}
@@ -113,18 +122,28 @@ const deleteAgent = (id) => {
   );
 }
 
+// =========================
+// PROTECTED ROUTE
+// =========================
 function ProtectedRoute() {
   const { isLoggedIn } = useContext(AuthContext);
   return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
+// =========================
+// DASHBOARD LAYOUT
+// =========================
 function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const marginLeft = sidebarOpen ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED;
 
+  const location = useLocation();
+  const hideFooter = location.pathname === "/settings"; // from file1
+
   return (
     <>
       <SideBar initialOpen={sidebarOpen} onToggle={setSidebarOpen} />
+
       <div
         style={{
           marginLeft,
@@ -135,15 +154,20 @@ function DashboardLayout() {
         }}
       >
         <Navbar />
+
         <main style={{ maxWidth: 1560, margin: "0 auto", padding: "24px 22px" }}>
           <Outlet />
         </main>
-        <Foot />
+
+        {!hideFooter && <Foot />}
       </div>
     </>
   );
 }
 
+// =========================
+// THEME
+// =========================
 const theme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
@@ -156,22 +180,43 @@ const theme = createTheme({
   },
 });
 
+// =========================
+// APP
+// =========================
 export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+            {/* Public */}
             <Route path="/login" element={<Login />} />
 
+            {/* Protected */}
             <Route element={<ProtectedRoute />}>
               <Route element={<DashboardLayout />}>
-                <Route path="/" element={<><ProductCards /><GraphsDashboardPage /></>} />
+
+                <Route
+                  path="/"
+                  element={
+                    <>
+                      <ProductCards />
+                      <GraphsDashboardPage />
+                    </>
+                  }
+                />
+
                 <Route path="/category/:type" element={<StockCategoryPage />} />
+
+                {/* FROM FILE 1 */}
+                <Route path="/settings" element={<Settings />} />
+
+                {/* FROM FILE 2 */}
                 <Route path="/profile" element={<ProfilePage />} />
               </Route>
             </Route>
 
+            {/* Fallback */}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>
