@@ -1,0 +1,184 @@
+{
+  "themes": {
+    "blue": {
+      "primary": "#289DD9",
+      "primary_gradient": "linear-gradient(90deg, #289DD9, #54A2D9)",
+      "hover_gradient": "linear-gradient(90deg, #54A2D9, #94C8E9)",
+      "dark_accent": "#1E3A5F",
+
+      "page_bg": "linear-gradient(135deg, #f4f7fb 0%, #ffffff 60%, #eef2f7 100%)",
+      "graph_page_bg": "linear-gradient(180deg, #f9fafb 0%, #eef2ff 35%, #e0f2fe 100%)",
+
+      "card_bg": "#ffffff",
+      "glass_bg": "rgba(255,255,255,0.92)",
+      "blur": "blur(12px)",
+      "card_radius": "18px",
+      "shadow": "0 12px 40px rgba(0,0,0,0.08)",
+      "hover_shadow": "0 20px 50px rgba(0,0,0,0.18)",
+      "card_shadow_strong": "0 16px 36px rgba(15,23,42,0.12)",
+
+      "border_highlight": "6px solid #289DD9",
+      "border_color": "rgba(148,163,184,0.8)",
+
+      "text_primary": "#0f172a",
+      "text_secondary": "#64748b",
+
+      "icon_bg": "rgba(40,157,217,0.22)",
+      "icon_size": "20px",
+
+      "button_bg": "linear-gradient(135deg, #0f172a, #111827, #020617)",
+      "button_radius": "8px",
+      "button_shadow": "0px 4px 12px rgba(40,157,217,0.4)",
+
+      "grid_color": "#e2e8f0",
+      "padding_large": "32px",
+      "padding_medium": "24px",
+      "gap_common": "16px",
+      "max_width": "1400px"
+    },
+
+    "green": {
+      "primary": "#22c55e",
+      "primary_gradient": "linear-gradient(90deg, #22c55e, #4ade80)",
+      "hover_gradient": "linear-gradient(90deg, #4ade80, #86efac)",
+      "dark_accent": "#065f46",
+
+      "page_bg": "linear-gradient(135deg, #f0fdf4 0%, #ffffff 60%, #e9fce8 100%)",
+      "graph_page_bg": "linear-gradient(180deg, #f6fff6 0%, #e0ffe8 35%, #d2f7e0 100%)",
+
+      "card_bg": "#ffffff",
+      "glass_bg": "rgba(255,255,255,0.92)",
+      "blur": "blur(12px)",
+      "card_radius": "18px",
+      "shadow": "0 12px 40px rgba(0,0,0,0.06)",
+      "hover_shadow": "0 20px 50px rgba(0,0,0,0.16)",
+      "card_shadow_strong": "0 16px 36px rgba(6,95,70,0.12)",
+
+      "border_highlight": "6px solid #22c55e",
+      "border_color": "rgba(166,230,179,0.8)",
+
+      "text_primary": "#064e3b",
+      "text_secondary": "#4f9a6f",
+
+      "icon_bg": "rgba(34,197,94,0.25)",
+
+      "button_bg": "linear-gradient(135deg, #064e3b, #065f46, #022c20)",
+      "button_radius": "8px",
+      "button_shadow": "0px 4px 12px rgba(34,197,94,0.4)",
+
+      "grid_color": "#d3eadd",
+      "padding_large": "32px",
+      "padding_medium": "24px",
+      "gap_common": "16px",
+      "max_width": "1400px"
+    },
+
+    "red": {
+      "primary": "#ef4444",
+      "primary_gradient": "linear-gradient(90deg, #ef4444, #f87171)",
+      "hover_gradient": "linear-gradient(90deg, #f87171, #fca5a5)",
+      "dark_accent": "#7f1d1d",
+
+      "page_bg": "linear-gradient(135deg, #fff5f5 0%, #ffffff 60%, #fdecec 100%)",
+      "graph_page_bg": "linear-gradient(180deg, #fffafa 0%, #ffecec 35%, #ffdcdc 100%)",
+
+      "card_bg": "#ffffff",
+      "glass_bg": "rgba(255,255,255,0.92)",
+      "blur": "blur(12px)",
+      "card_radius": "18px",
+      "shadow": "0 12px 40px rgba(255,0,0,0.06)",
+      "hover_shadow": "0 20px 50px rgba(255,0,0,0.16)",
+      "card_shadow_strong": "0 16px 36px rgba(127,29,29,0.12)",
+
+      "border_highlight": "6px solid #ef4444",
+      "border_color": "rgba(255,160,160,0.8)",
+
+      "text_primary": "#7f1d1d",
+      "text_secondary": "#b44a4a",
+
+      "icon_bg": "rgba(239,68,68,0.25)",
+
+      "button_bg": "linear-gradient(135deg, #450a0a, #7f1d1d, #991b1b)",
+      "button_radius": "8px",
+      "button_shadow": "0px 4px 12px rgba(239,68,68,0.4)",
+
+      "grid_color": "#f4d4d4",
+      "padding_large": "32px",
+      "padding_medium": "24px",
+      "gap_common": "16px",
+      "max_width": "1400px"
+    },
+
+    "purple": {
+      "primary": "#8b5cf6",
+      "primary_gradient": "linear-gradient(90deg, #8b5cf6, #a78bfa)",
+      "hover_gradient": "linear-gradient(90deg, #a78bfa, #c4b5fd)",
+      "dark_accent": "#4c1d95",
+
+      "page_bg": "linear-gradient(135deg, #faf5ff 0%, #ffffff 60%, #f3e8ff 100%)",
+      "graph_page_bg": "linear-gradient(180deg, #faf5ff 0%, #f3e8ff 35%, #e9d5ff 100%)",
+
+      "card_bg": "#ffffff",
+      "glass_bg": "rgba(255,255,255,0.92)",
+      "blur": "blur(12px)",
+      "card_radius": "18px",
+      "shadow": "0 12px 40px rgba(0,0,0,0.06)",
+      "hover_shadow": "0 20px 50px rgba(0,0,0,0.16)",
+      "card_shadow_strong": "0 16px 36px rgba(76,29,149,0.12)",
+
+      "border_highlight": "6px solid #8b5cf6",
+      "border_color": "rgba(180,160,255,0.8)",
+
+      "text_primary": "#4c1d95",
+      "text_secondary": "#7a55c6",
+
+      "icon_bg": "rgba(139,92,246,0.25)",
+
+      "button_bg": "linear-gradient(135deg, #2e1065, #4c1d95, #5b21b6)",
+      "button_radius": "8px",
+      "button_shadow": "0px 4px 12px rgba(139,92,246,0.4)",
+
+      "grid_color": "#e3d9f7",
+      "padding_large": "32px",
+      "padding_medium": "24px",
+      "gap_common": "16px",
+      "max_width": "1400px"
+    },
+
+    "orange": {
+      "primary": "#f97316",
+      "primary_gradient": "linear-gradient(90deg, #f97316, #fb923c)",
+      "hover_gradient": "linear-gradient(90deg, #fb923c, #fdba74)",
+      "dark_accent": "#7c2d12",
+
+      "page_bg": "linear-gradient(135deg, #fff7ed 0%, #ffffff 60%, #ffefd5 100%)",
+      "graph_page_bg": "linear-gradient(180deg, #fffaf5 0%, #ffe4cc 35%, #ffdfbf 100%)",
+
+      "card_bg": "#ffffff",
+      "glass_bg": "rgba(255,255,255,0.92)",
+      "blur": "blur(12px)",
+      "card_radius": "18px",
+      "shadow": "0 12px 40px rgba(0,0,0,0.06)",
+      "hover_shadow": "0 20px 50px rgba(0,0,0,0.16)",
+      "card_shadow_strong": "0 16px 36px rgba(124,45,18,0.12)",
+
+      "border_highlight": "6px solid #f97316",
+      "border_color": "rgba(255,205,170,0.8)",
+
+      "text_primary": "#7c2d12",
+      "text_secondary": "#cc6b35",
+
+      "icon_bg": "rgba(249,115,22,0.25)",
+
+      "button_bg": "linear-gradient(135deg, #431407, #7c2d12, #9a3412)",
+      "button_radius": "8px",
+      "button_shadow": "0px 4px 12px rgba(249,115,22,0.4)",
+
+      "grid_color": "#ffe4cc",
+      "padding_large": "32px",
+      "padding_medium": "24px",
+      "gap_common": "16px",
+      "max_width": "1400px"
+    }
+  }
+}
