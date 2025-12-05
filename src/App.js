@@ -1,6 +1,7 @@
 // src/App.js
 import React, { useState, createContext, useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import "./Global/themeLoader";
 
 import {
   BrowserRouter,

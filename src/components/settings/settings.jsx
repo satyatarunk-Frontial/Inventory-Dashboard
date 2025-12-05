@@ -5,6 +5,40 @@ export default function SettingsTheme() {
   const [boxShadowColor, setBoxShadowColor] = useState("#000000");
   const [borderColor, setBorderColor] = useState("#000000");
 
+  const presetThemes = {
+    blue: {
+      bg: "#e6f0ff",
+      shadow: "#005eff55",
+      border: "#005eff",
+    },
+    green: {
+      bg: "#e7fbe7",
+      shadow: "#16a34a55",
+      border: "#16a34a",
+    },
+    red: {
+      bg: "#ffe7e7",
+      shadow: "#dc262655",
+      border: "#dc2626",
+    },
+    purple: {
+      bg: "#f3e8ff",
+      shadow: "#7e22ce55",
+      border: "#7e22ce",
+    },
+    orange: {
+      bg: "#fff3e0",
+      shadow: "#f9731655",
+      border: "#f97316",
+    },
+  };
+
+  const applyPreset = (theme) => {
+    setBgColor(presetThemes[theme].bg);
+    setBoxShadowColor(presetThemes[theme].shadow);
+    setBorderColor(presetThemes[theme].border);
+  };
+
   const handleUpdate = () => {
     const theme = {
       bgColor,
@@ -39,6 +73,43 @@ export default function SettingsTheme() {
       >
         Brand Customization Theme
       </h2>
+
+      {/* Preset Theme Buttons */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: "25px",
+        }}
+      >
+        {["blue", "green", "red", "purple", "orange"].map((t) => (
+          <button
+            key={t}
+            onClick={() => applyPreset(t)}
+            style={{
+              padding: "10px 15px",
+              borderRadius: "6px",
+              border: "none",
+              cursor: "pointer",
+              color: "white",
+              textTransform: "capitalize",
+              width: "18%",
+              background:
+                t === "blue"
+                  ? "#005eff"
+                  : t === "green"
+                  ? "#16a34a"
+                  : t === "red"
+                  ? "#dc2626"
+                  : t === "purple"
+                  ? "#7e22ce"
+                  : "#f97316",
+            }}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
 
       {/* Background Color */}
       <div style={{ marginBottom: "20px" }}>
@@ -130,7 +201,7 @@ export default function SettingsTheme() {
               outline: "none",
             }}
           />
-          
+
           <span style={{ fontSize: "14px", color: "#666" }}>{borderColor}</span>
         </div>
       </div>
@@ -152,12 +223,10 @@ export default function SettingsTheme() {
           letterSpacing: "0.3px",
           transition: "0.2s",
         }}
-        onMouseEnter={(e) => (e.target.style.background = "#0046c7")}
-        onMouseLeave={(e) => (e.target.style.background = "#005eff")}
       >
         Update Theme
       </button>
-       
+
       <p
         style={{
           marginTop: "20px",
