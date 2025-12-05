@@ -20,7 +20,6 @@ import ProfilePage from "./pages/ProfilePage";
 
 import "./App.css";
 
-// AUTH CONTEXT — now includes user + updateUser
 export const AuthContext = createContext(null);
 
 function AuthProvider({ children }) {
@@ -32,6 +31,18 @@ function AuthProvider({ children }) {
     const saved = localStorage.getItem("user");
     return saved ? JSON.parse(saved) : null;
   });
+
+  // AGENTS STATE — moved INSIDE AuthProvider
+  const [agents, setAgents] = useState(() => {
+    const saved = localStorage.getItem("agents");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const addAgent = (newAgent) => {
+    const updated = [...agents, newAgent];
+    setAgents(updated);
+    localStorage.setItem("agents", JSON.stringify(updated));
+  };
 
   const login = (userData) => {
     localStorage.setItem("isLoggedIn", "true");
@@ -51,8 +62,21 @@ function AuthProvider({ children }) {
     const updated = { ...user, ...newUserData };
     localStorage.setItem("user", JSON.stringify(updated));
     setUser(updated);
-    window.dispatchEvent(new Event("userUpdated")); // For Navbar instant update
+    window.dispatchEvent(new Event("userUpdated"));
   };
+  const updateAgent = (agentId, updatedData) => {
+  const updated = agents.map((a) =>
+    a.id === agentId ? { ...a, ...updatedData } : a
+  );
+  setAgents(updated);
+  localStorage.setItem("agents", JSON.stringify(updated));
+};
+
+const deleteAgent = (id) => {
+  const updated = agents.filter(a => a.id !== id);
+  setAgents(updated);
+  localStorage.setItem("agents", JSON.stringify(updated));
+};
 
   useEffect(() => {
     const handleStorage = (e) => {
@@ -62,6 +86,9 @@ function AuthProvider({ children }) {
       if (e.key === "user") {
         setUser(e.newValue ? JSON.parse(e.newValue) : null);
       }
+      if (e.key === "agents") {
+        setAgents(e.newValue ? JSON.parse(e.newValue) : []);
+      }
     };
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
@@ -69,7 +96,17 @@ function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, user, login, logout, updateUser }}
+      value={{
+        isLoggedIn,
+        user,
+        login,
+        logout,
+        updateUser,
+        agents,        
+        addAgent,
+        updateAgent,
+  deleteAgent,     
+      }}
     >
       {children}
     </AuthContext.Provider>

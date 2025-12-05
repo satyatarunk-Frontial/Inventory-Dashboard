@@ -185,6 +185,15 @@ export default function Navbar() {
             <User size={18} style={{ marginRight: 12 }} />
             Profile
           </MenuItem>
+         <MenuItem
+  onClick={() => {
+    handleClose();
+    navigate("/profile?tab=user-access");
+  }}
+>
+  <User size={18} style={{ marginRight: 12 }} />
+  User Access
+</MenuItem>
           <MenuItem onClick={handleClose}>
             <Settings size={18} style={{ marginRight: 12 }} />
             Settings
