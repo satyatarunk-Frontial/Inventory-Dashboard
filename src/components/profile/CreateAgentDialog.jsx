@@ -22,31 +22,62 @@ export default function CreateAgentDialog({ open, onClose }) {
   const { addAgent, user } = useContext(AuthContext);
   const [form, setForm] = useState({
     firstName: "",
-    lastName: "",
+    lastName: "",        // Now optional
     email: "",
     role: "",
     countryCode: "+91",
     mobile: "",
   });
 
+  const [errors, setErrors] = useState({});
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    // Clear error when user starts typing
+    if (errors[e.target.name]) {
+      setErrors({ ...errors, [e.target.name]: false });
+    }
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!form.firstName.trim()) newErrors.firstName = true;
+    if (!form.email.trim()) newErrors.email = true;
+    if (!form.role) newErrors.role = true;
+    if (!form.mobile.trim()) newErrors.mobile = true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSave = () => {
-    const fullName = `${form.firstName} ${form.lastName}`.trim();
+    if (!validate()) return;
+
+    const fullName = form.lastName.trim()
+      ? `${form.firstName.trim()} ${form.lastName.trim()}`
+      : form.firstName.trim();
+
     addAgent({
       id: Date.now(),
       fullName,
-      firstName: form.firstName,
-      lastName: form.lastName,
-      email: form.email,
-      phone: `${form.countryCode} ${form.mobile}`,
+      firstName: form.firstName.trim(),
+      lastName: form.lastName.trim() || "",
+      email: form.email.trim(),
+      phone: `${form.countryCode} ${form.mobile.trim()}`,
       role: form.role,
       createdBy: user?.fullName || "Admin",
       lastLoggedIn: "Never",
     });
-    setForm({ firstName: "", lastName: "", email: "", role: "", countryCode: "+91", mobile: "" });
+
+    // Reset form
+    setForm({
+      firstName: "",
+      lastName: "",
+      email: "",
+      role: "",
+      countryCode: "+91",
+      mobile: "",
+    });
+    setErrors({});
     onClose();
   };
 
@@ -66,17 +97,18 @@ export default function CreateAgentDialog({ open, onClose }) {
                 value={form.firstName}
                 onChange={handleChange}
                 fullWidth
-                variant="outlined"
+                error={!!errors.firstName}
+                helperText={errors.firstName && "First Name is required"}
               />
             </Grid>
             <Grid item xs={6}>
               <TextField
-                label="Last Name *"
+                label="Last Name"
                 name="lastName"
                 value={form.lastName}
                 onChange={handleChange}
                 fullWidth
-                variant="outlined"
+                placeholder="Optional"
               />
             </Grid>
           </Grid>
@@ -89,18 +121,24 @@ export default function CreateAgentDialog({ open, onClose }) {
             value={form.email}
             onChange={handleChange}
             fullWidth
-            variant="outlined"
+            error={!!errors.email}
+            helperText={errors.email && "Email is required"}
           />
 
           {/* Role */}
-          <FormControl fullWidth>
+          <FormControl fullWidth error={!!errors.role}>
             <InputLabel>Select a Role for the Agent *</InputLabel>
-            <Select name="role" value={form.role} onChange={handleChange} label="Select a Role for the Agent *">
+            <Select
+              name="role"
+              value={form.role}
+              onChange={handleChange}
+              label="Select a Role for the Agent *"
+            >
               <MenuItem value="Admin">Admin</MenuItem>
-              <MenuItem value="Manager">Manager</MenuItem>
-              <MenuItem value="Agent">Agent</MenuItem>
-              <MenuItem value="Viewer">Viewer</MenuItem>
+              <MenuItem value="Employee">Employee</MenuItem>
+              <MenuItem value="Guest">Guest</MenuItem>
             </Select>
+            {errors.role && <Typography variant="caption" color="error">Role is required</Typography>}
           </FormControl>
 
           {/* Phone Row */}
@@ -122,27 +160,22 @@ export default function CreateAgentDialog({ open, onClose }) {
                 value={form.mobile}
                 onChange={handleChange}
                 fullWidth
-                variant="outlined"
+                error={!!errors.mobile}
+                helperText={errors.mobile && "Mobile number is required"}
                 placeholder="Enter 10-digit number"
               />
             </Grid>
           </Grid>
 
           {/* WhatsApp Note */}
-          <Box
-            sx={{
-              bgcolor: "#e3f2fd",
-              p: 2,
-              borderRadius: 2,
-              border: "1px solid #81d4fa",
-            }}
-          >
-            <Typography variant="body2" color="info.contrastText">
+          <Box sx={{ bgcolor: "#e3f2fd", p: 2, borderRadius: 2, border: "1px solid #81d4fa" }}>
+            <Typography variant="body2">
               Please ensure this number has WhatsApp. An OTP will be sent to this number on WhatsApp while logging in.
             </Typography>
           </Box>
         </Stack>
       </DialogContent>
+
       <DialogActions sx={{ p: 3, gap: 2 }}>
         <Button onClick={onClose} size="large">
           Cancel
