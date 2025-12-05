@@ -16,9 +16,11 @@ import GraphsDashboardPage from "./pages/GraphDashboardpage";
 import StockCategoryPage from "./pages/StockCategoryPage";
 import Foot from "./components/footer/Foot";
 import Login from "./Auth/Login";
+import ProfilePage from "./pages/ProfilePage";
+
 import "./App.css";
 
-// AUTH CONTEXT
+// AUTH CONTEXT — now includes user + updateUser
 export const AuthContext = createContext(null);
 
 function AuthProvider({ children }) {
@@ -26,31 +28,49 @@ function AuthProvider({ children }) {
     localStorage.getItem("isLoggedIn") === "true"
   );
 
-  const login = (userData = null) => {
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem("user");
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const login = (userData) => {
     localStorage.setItem("isLoggedIn", "true");
-    if (userData) localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(userData));
     setIsLoggedIn(true);
+    setUser(userData);
   };
 
   const logout = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
+    setUser(null);
   };
 
-  // Sync across tabs
+  const updateUser = (newUserData) => {
+    const updated = { ...user, ...newUserData };
+    localStorage.setItem("user", JSON.stringify(updated));
+    setUser(updated);
+    window.dispatchEvent(new Event("userUpdated")); // For Navbar instant update
+  };
+
   useEffect(() => {
-    const handler = (e) => {
+    const handleStorage = (e) => {
       if (e.key === "isLoggedIn") {
         setIsLoggedIn(e.newValue === "true");
       }
+      if (e.key === "user") {
+        setUser(e.newValue ? JSON.parse(e.newValue) : null);
+      }
     };
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider
+      value={{ isLoggedIn, user, login, logout, updateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -105,26 +125,16 @@ export default function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            {/* Public */}
             <Route path="/login" element={<Login />} />
 
-            {/* Protected */}
             <Route element={<ProtectedRoute />}>
               <Route element={<DashboardLayout />}>
-                <Route
-                  path="/"
-                  element={
-                    <>
-                      <ProductCards />
-                      <GraphsDashboardPage />
-                    </>
-                  }
-                />
+                <Route path="/" element={<><ProductCards /><GraphsDashboardPage /></>} />
                 <Route path="/category/:type" element={<StockCategoryPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
               </Route>
             </Route>
 
-            {/* Fallback */}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>
