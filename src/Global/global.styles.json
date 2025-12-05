@@ -5,7 +5,7 @@
       "primary_gradient": "linear-gradient(90deg, #289DD9, #54A2D9)",
       "hover_gradient": "linear-gradient(90deg, #54A2D9, #94C8E9)",
       "dark_accent": "#1E3A5F",
-
+       
       "page_bg": "linear-gradient(135deg, #f4f7fb 0%, #ffffff 60%, #eef2f7 100%)",
       "graph_page_bg": "linear-gradient(180deg, #f9fafb 0%, #eef2ff 35%, #e0f2fe 100%)",
 
@@ -16,7 +16,7 @@
       "shadow": "0 12px 40px rgba(0,0,0,0.08)",
       "hover_shadow": "0 20px 50px rgba(0,0,0,0.18)",
       "card_shadow_strong": "0 16px 36px rgba(15,23,42,0.12)",
-
+       
       "border_highlight": "6px solid #289DD9",
       "border_color": "rgba(148,163,184,0.8)",
 
@@ -72,7 +72,7 @@
       "gap_common": "16px",
       "max_width": "1400px"
     },
-
+     
     "red": {
       "primary": "#ef4444",
       "primary_gradient": "linear-gradient(90deg, #ef4444, #f87171)",

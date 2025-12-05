@@ -4,7 +4,7 @@ export default function SettingsTheme() {
   const [bgColor, setBgColor] = useState("#ffffff");
   const [boxShadowColor, setBoxShadowColor] = useState("#000000");
   const [borderColor, setBorderColor] = useState("#000000");
-
+  
   const presetThemes = {
     blue: {
       bg: "#e6f0ff",
@@ -39,16 +39,21 @@ export default function SettingsTheme() {
     setBorderColor(presetThemes[theme].border);
   };
 
-  const handleUpdate = () => {
-    const theme = {
-      bgColor,
-      boxShadowColor,
-      borderColor,
-    };
-
-    localStorage.setItem("customTheme", JSON.stringify(theme));
-    alert("Theme updated! Please reload and relogin to apply changes.");
+ const handleUpdate = () => {
+  const updatedTheme = {
+    ...presetThemes.custom,
+    page_bg: bgColor,
+    shadow: boxShadowColor,
+    border_color: borderColor,
   };
+
+  localStorage.setItem(
+    "customFullTheme",
+    JSON.stringify(updatedTheme)
+  );
+
+  alert("Theme updated! Reload the page.");
+};
 
   return (
     <div

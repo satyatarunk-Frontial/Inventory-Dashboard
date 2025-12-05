@@ -1,6 +1,11 @@
 import themeData from "./global.styles.json";
 
-export const AppTheme = themeData;
+let saved = localStorage.getItem("customFullTheme");
 
-// Make globally accessible (optional but best)
+if (saved) {
+  saved = JSON.parse(saved);
+  themeData.themes.custom = saved;
+}
+
+export const AppTheme = themeData;
 window.THEME = themeData;

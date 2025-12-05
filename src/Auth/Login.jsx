@@ -31,15 +31,15 @@ export default function Login() {
       navigate("/", { replace: true });
     }
   }, [isLoggedIn, navigate]);
-
+  
   if (isLoggedIn) {
     return <Navigate to="/" replace />;
   }
-
+  
   const storedUser = localStorage.getItem("user");
   const currentUser = storedUser ? JSON.parse(storedUser) : null;
   const brandText = currentUser?.brandText || "Your Brand";
-
+  
   const handleLogin = (e) => {
     e.preventDefault();
 
@@ -53,7 +53,7 @@ export default function Login() {
       alert("Invalid email or password!");
     }
   };
-
+  
   const GoogleSvg = () => (
     <svg width="22" height="22" viewBox="0 0 48 48">
       <path
@@ -74,7 +74,7 @@ export default function Login() {
       />
     </svg>
   );
-
+  
   const handleGoogleLogin = () => {
     window.location.href = "https://accounts.google.com";
   };
@@ -98,7 +98,7 @@ export default function Login() {
       backgroundColor: "#fff",
     },
   });
-
+  
   return (
     <Box
       sx={{
@@ -113,7 +113,7 @@ export default function Login() {
         left: 0,
         background: "white",
       }}
-    >
+    > 
       {/* LEFT PANEL */}
       <Box
         sx={{
@@ -325,7 +325,7 @@ export default function Login() {
           🚀 Powered by <strong>Frontial Technologies</strong>
         </Link>
       </Box>
-
+      
       {/* RIGHT PANEL - Premium Login Form */}
       <Box
         sx={{

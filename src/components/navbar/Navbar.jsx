@@ -1,5 +1,5 @@
 // src/components/navbar/Navbar.jsx
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -14,6 +14,9 @@ import {
 import { LogOut, User, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+// ⭐ IMPORT THEME
+import { AppTheme } from "../../Global/themeLoader";
+
 export const NAVBAR_HEIGHT = 85;
 
 export default function Navbar() {
@@ -25,7 +28,10 @@ export default function Navbar() {
   const [avatarSrc, setAvatarSrc] = useState(null);
   const [brandText, setBrandText] = useState("The Pickls");
 
-  // User update listener — localStorage + event se
+  // ⭐ MAKE SAFE FALLBACK THEME (AVOID undefined error)
+  const theme = AppTheme.themes.custom || AppTheme.themes.blue;
+
+  // User update listener
   useEffect(() => {
     const updateUserInfo = () => {
       const saved = localStorage.getItem("user");
@@ -36,12 +42,12 @@ export default function Navbar() {
           setAvatarSrc(u.avatarBase64 || null);
           setBrandText(u.brandText || "The Pickls");
         } catch (e) {
-          console.error("Failed to parse user from localStorage", e);
+          console.error("Failed to parse user", e);
         }
       }
     };
 
-    updateUserInfo(); // Pehli baar load
+    updateUserInfo();
     window.addEventListener("userUpdated", updateUserInfo);
     window.addEventListener("storage", updateUserInfo);
 
@@ -51,19 +57,13 @@ export default function Navbar() {
     };
   }, []);
 
-  // Logo based on brand
   const logoUrl =
     brandText === "Fevi"
       ? "/By The fevi.png"
       : "https://thepickls.com/cdn/shop/files/the_pickls.png?v=1704872288";
 
-  const handleAvatarClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const handleAvatarClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
@@ -81,9 +81,12 @@ export default function Navbar() {
         right: 0,
         height: NAVBAR_HEIGHT,
         zIndex: 1400,
-        background: "linear-gradient(180deg, #FFFFFF 0%, #F8FBFB 100%)",
-        borderBottom: "1px solid rgba(0,0,0,0.04)",
-        boxShadow: "0 6px 18px rgba(12,24,48,0.04)",
+
+        // ⭐ Apply dynamic theme safely
+        background: theme.page_bg,
+        borderBottom: `1px solid ${theme.border_color}`,
+        boxShadow: theme.shadow,
+
         px: { xs: 1, sm: 2 },
       }}
     >
@@ -93,7 +96,7 @@ export default function Navbar() {
         justifyContent="space-between"
         sx={{ height: "100%" }}
       >
-        {/* Left - Logo + Brand Name */}
+        {/* Left - Logo */}
         <Stack direction="row" alignItems="center" spacing={2}>
           <Box
             component="img"
@@ -104,16 +107,17 @@ export default function Navbar() {
               height: { xs: 48, sm: 56 },
               borderRadius: "50%",
               objectFit: "contain",
-              background: "white",
+              background: theme.card_bg,
               p: 0.5,
-              boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+              boxShadow: theme.card_shadow_strong,
             }}
           />
+
           <Typography
             variant="h5"
             sx={{
               fontWeight: 800,
-              color: "#13331f",
+              color: theme.text_primary,
               display: { xs: "none", md: "block" },
               letterSpacing: "0.8px",
             }}
@@ -132,7 +136,7 @@ export default function Navbar() {
             transform: "translate(-50%, -50%)",
             textAlign: "center",
             fontWeight: 600,
-            color: "#153a1f",
+            color: theme.text_primary,
             pointerEvents: "none",
             whiteSpace: "nowrap",
             display: { xs: "none", lg: "block" },
@@ -141,7 +145,7 @@ export default function Navbar() {
           Stock Inventory Management
         </Typography>
 
-        {/* Right - Avatar */}
+        {/* Avatar */}
         <Tooltip title="Account settings">
           <IconButton onClick={handleAvatarClick}>
             <Avatar
@@ -149,7 +153,10 @@ export default function Navbar() {
               sx={{
                 width: 46,
                 height: 46,
-                bgcolor: "#289DD9",
+
+                // ⭐ Avatar uses theme primary color
+                bgcolor: theme.primary,
+
                 fontWeight: "bold",
                 fontSize: "1.2rem",
               }}
@@ -159,14 +166,20 @@ export default function Navbar() {
           </IconButton>
         </Tooltip>
 
-        {/* Dropdown Menu */}
+        {/* Menu */}
         <Menu
           anchorEl={anchorEl}
           open={open}
           onClose={handleClose}
           PaperProps={{
             elevation: 8,
-            sx: { mt: 1.5, minWidth: 200, borderRadius: 2 },
+            sx: {
+              mt: 1.5,
+              minWidth: 200,
+              borderRadius: 2,
+              background: theme.card_bg,
+              boxShadow: theme.shadow,
+            },
           }}
           transformOrigin={{ horizontal: "right", vertical: "top" }}
           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
@@ -175,7 +188,9 @@ export default function Navbar() {
             <User size={18} style={{ marginRight: 12 }} />
             {displayName}
           </MenuItem>
+
           <Divider />
+
           <MenuItem
             onClick={() => {
               handleClose();
@@ -185,22 +200,27 @@ export default function Navbar() {
             <User size={18} style={{ marginRight: 12 }} />
             Profile
           </MenuItem>
-         <MenuItem
-  onClick={() => {
-    handleClose();
-    navigate("/profile?tab=user-access");
-  }}
->
-  <User size={18} style={{ marginRight: 12 }} />
-  User Access
-</MenuItem>
-          <MenuItem  onClick={() => {
-    handleClose();
-    navigate("/settings?tab=user-access");
-  }}>
+
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              navigate("/profile?tab=user-access");
+            }}
+          >
+            <User size={18} style={{ marginRight: 12 }} />
+            User Access
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              navigate("/settings?tab=user-access");
+            }}
+          >
             <Settings size={18} style={{ marginRight: 12 }} />
             Settings
           </MenuItem>
+
           <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
             <LogOut size={18} style={{ marginRight: 12 }} />
             Logout
