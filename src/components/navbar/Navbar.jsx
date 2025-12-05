@@ -1,42 +1,81 @@
 // src/components/navbar/Navbar.jsx
-import React, { useState } from "react";
-import { Box, Typography, Button, Stack } from "@mui/material";
-import { User } from "lucide-react";
-import AuthDialog from "../login/login";
 
- 
+import React, { useContext, useState } from "react";
+import {
+  Box,
+  Typography,
+  Stack,
+  Avatar,
+  Menu,
+  MenuItem,
+  Divider,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
+import { LogOut, User, Settings } from "lucide-react";
+import { AuthContext } from "../../App";
+import { useNavigate } from "react-router-dom";
+
+export const NAVBAR_HEIGHT = 85;
 
 export default function Navbar() {
-  const [authOpen, setAuthOpen] = useState(false);
+  const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
-  // Brand text that should change after login (default as in your design)
-  const [brandText, setBrandText] = useState("The Pickls");
-
-  function handleOpenAuth() {
-    setAuthOpen(true);
-  }
-  function handleCloseAuth() {
-    setAuthOpen(false);
+  if (!authContext) {
+    console.error("Navbar rendered outside AuthProvider");
+    return null;
   }
 
-  // onLogin receives a user object { id, username, brandText }
-  function handleLoginSuccess(user) {
-    // If user has brandText, replace the brand with it; else fallback to default
-    setBrandText(user.brandText ? user.brandText : brandText);
-    setAuthOpen(false);
+  const { isLoggedIn, logout } = authContext;
+
+  if (!isLoggedIn) {
+    return null;
   }
+
+  // Get current logged-in user from localStorage
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
+
+  // Dynamic values from user
+  const displayName = user?.username?.split("@")[0] || "User";
+  const brandText = user?.brandText || "The Pickls";
+
+  // DYNAMIC LOGO - This will automatically pick the correct one
+  const logoUrl =
+    brandText === "Fevi"
+      ? "/By The fevi.png"   // Your exact filename (with space and capital letters)
+      : "https://thepickls.com/cdn/shop/files/the_pickls.png?v=1704872288";
+
+  const handleAvatarClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    handleClose();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <Box
       sx={{
-        bgcolor: "rgba(255, 255, 255, 0.12)",
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.18)",
-        position: "sticky",
+        position: "fixed",
         top: 0,
-        zIndex: 1300,
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.08)",
+        left: 0,
+        right: 0,
+        height: NAVBAR_HEIGHT,
+        zIndex: 1400,
+        background: "linear-gradient(180deg, #FFFFFF 0%, #F8FBFB 100%)",
+        borderBottom: "1px solid rgba(0,0,0,0.04)",
+        boxShadow: "0 6px 18px rgba(12,24,48,0.04)",
+        px: { xs: 1, sm: 2 },
       }}
     >
       <Stack
@@ -44,89 +83,103 @@ export default function Navbar() {
         alignItems="center"
         justifyContent="space-between"
         sx={{
-          px: { xs: 2, sm: 4 },
-          py: 2,
-          maxWidth: "1460px",
-          mx: "auto",
+          height: "100%",
+         
+          position: "relative", // ← THIS IS REQUIRED for perfect centering
         }}
       >
-        {/* Logo + Brand Name */}
+        {/* Logo + Dynamic Brand Name - Far Left */}
         <Stack direction="row" alignItems="center" spacing={2}>
           <Box
             component="img"
-            src="https://thepickls.com/cdn/shop/files/the_pickls.png?v=1704872288"
-            alt="The Pickls"
+            src={logoUrl}
+            alt={brandText}
             sx={{
-              width: { xs: 44, sm: 52 },
-              height: { xs: 44, sm: 52 },
+              width: { xs: 48, sm: 56 },
+              height: { xs: 48, sm: 56 },
               borderRadius: "50%",
-              objectFit: "cover",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              objectFit: "contain",
+              background: "white",
+              p: 0.5,
+              boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
             }}
           />
-
           <Typography
             variant="h5"
             sx={{
               fontWeight: 800,
-              color: "#1a3a1a",
-              letterSpacing: "0.3px",
+              color: "#13331f",
               display: { xs: "none", md: "block" },
+              letterSpacing: "0.8px",
             }}
           >
             {brandText}
           </Typography>
         </Stack>
 
-        {/* Center Title - Only visible on larger screens */}
+        {/* TRUE CENTER TITLE - Perfectly centered no matter what */}
         <Typography
-          variant="h4"
+          variant="h5"
           sx={{
             position: "absolute",
-            left: 50,
-            right: 50,
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
             textAlign: "center",
             fontWeight: 600,
-            color: "#1e3a1e",
+            color: "#153a1f",
             pointerEvents: "none",
+            whiteSpace: "nowrap",
             display: { xs: "none", lg: "block" },
           }}
         >
           Stock Inventory Management
         </Typography>
 
-        {/* Profile Button */}
-        <Button
-          onClick={handleOpenAuth}
-          variant="contained"
-          startIcon={<User size={19} />}
-          sx={{
-            bgcolor: "white",
-            color: "#2e7d32",
-            fontWeight: 600,
-            fontSize: "0.95rem",
-            textTransform: "none",
-            borderRadius: "30px",
-            px: 3,
-            py: 1,
-            boxShadow: "0 4px 14px rgba(0, 0, 0, 0.12)",
-            transition: "all 0.2s ease",
-            "&:hover": {
-              bgcolor: "white",
-              boxShadow: "0 8px 20px rgba(0, 0, 0, 0.18)",
-              transform: "translateY(-2px)",
-            },
-          }}
-        >
-          Profile
-        </Button>
-      </Stack>
+        {/* Avatar Dropdown - Far Right */}
+        <Tooltip title="Account settings">
+          <IconButton onClick={handleAvatarClick}>
+            <Avatar
+              sx={{
+                width: 46,
+                height: 46,
+                bgcolor: "#289DD9",
+                fontWeight: "bold",
+                fontSize: "1.2rem",
+              }}
+            >
+              {displayName.charAt(0).toUpperCase()}
+            </Avatar>
+          </IconButton>
+        </Tooltip>
 
-      <AuthDialog
-        open={authOpen}
-        onClose={handleCloseAuth}
-        onLoginSuccess={handleLoginSuccess}
-      />
+        {/* Dropdown Menu */}
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          PaperProps={{
+            elevation: 8,
+            sx: { mt: 1.5, minWidth: 200, borderRadius: 2 },
+          }}
+          transformOrigin={{ horizontal: "right", vertical: "top" }}
+          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        >
+          <MenuItem disabled sx={{ opacity: 0.8 }}>
+            <User size={18} style={{ marginRight: 12 }} />
+            {displayName}
+          </MenuItem>
+          <Divider />
+          <MenuItem onClick={handleClose}>
+            <Settings size={18} style={{ marginRight: 12 }} />
+            Settings
+          </MenuItem>
+          <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
+            <LogOut size={18} style={{ marginRight: 12 }} />
+            Logout
+          </MenuItem>
+        </Menu>
+      </Stack>
     </Box>
   );
 }

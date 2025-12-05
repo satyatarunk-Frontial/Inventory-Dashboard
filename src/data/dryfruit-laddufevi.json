@@ -1,0 +1,16 @@
+{
+  "title": "Dry Fruit Laddu",
+  "items": [
+    {
+      "id": "DFL-001",
+      "sku": "DFL-001",
+      "category": "dryfruit-laddu",
+      "name": "Dates & Almond Laddu",
+      "bgColor": "#ffffff",
+      "weights": [
+        { "gram": 250, "units": 80, "price": 180 },
+        { "gram": 500, "units": 50, "price": 340 }
+      ]
+    }
+  ]
+}

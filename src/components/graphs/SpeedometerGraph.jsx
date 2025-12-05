@@ -12,7 +12,7 @@ export default function StockSpeedometerGraph({ items }) {
       style={{
         background: "#ffffff",
         borderRadius: 28,
-        padding: "28px 30px 20px",
+        padding: "26px 28px 0px",
         boxShadow: "0 12px 40px rgba(0,0,0,0.08)",
         height: "100%",
         display: "flex",
