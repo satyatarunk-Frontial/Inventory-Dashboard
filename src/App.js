@@ -16,9 +16,10 @@ import GraphsDashboardPage from "./pages/GraphDashboardpage";
 import StockCategoryPage from "./pages/StockCategoryPage";
 import Foot from "./components/footer/Foot";
 import Login from "./Auth/Login";
+import ProfilePage from "./pages/ProfilePage";
+
 import "./App.css";
 
-// AUTH CONTEXT
 export const AuthContext = createContext(null);
 
 function AuthProvider({ children }) {
@@ -26,31 +27,87 @@ function AuthProvider({ children }) {
     localStorage.getItem("isLoggedIn") === "true"
   );
 
-  const login = (userData = null) => {
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem("user");
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  // AGENTS STATE — moved INSIDE AuthProvider
+  const [agents, setAgents] = useState(() => {
+    const saved = localStorage.getItem("agents");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const addAgent = (newAgent) => {
+    const updated = [...agents, newAgent];
+    setAgents(updated);
+    localStorage.setItem("agents", JSON.stringify(updated));
+  };
+
+  const login = (userData) => {
     localStorage.setItem("isLoggedIn", "true");
-    if (userData) localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(userData));
     setIsLoggedIn(true);
+    setUser(userData);
   };
 
   const logout = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
+    setUser(null);
   };
 
-  // Sync across tabs
+  const updateUser = (newUserData) => {
+    const updated = { ...user, ...newUserData };
+    localStorage.setItem("user", JSON.stringify(updated));
+    setUser(updated);
+    window.dispatchEvent(new Event("userUpdated"));
+  };
+  const updateAgent = (agentId, updatedData) => {
+  const updated = agents.map((a) =>
+    a.id === agentId ? { ...a, ...updatedData } : a
+  );
+  setAgents(updated);
+  localStorage.setItem("agents", JSON.stringify(updated));
+};
+
+const deleteAgent = (id) => {
+  const updated = agents.filter(a => a.id !== id);
+  setAgents(updated);
+  localStorage.setItem("agents", JSON.stringify(updated));
+};
+
   useEffect(() => {
-    const handler = (e) => {
+    const handleStorage = (e) => {
       if (e.key === "isLoggedIn") {
         setIsLoggedIn(e.newValue === "true");
       }
+      if (e.key === "user") {
+        setUser(e.newValue ? JSON.parse(e.newValue) : null);
+      }
+      if (e.key === "agents") {
+        setAgents(e.newValue ? JSON.parse(e.newValue) : []);
+      }
     };
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isLoggedIn,
+        user,
+        login,
+        logout,
+        updateUser,
+        agents,        
+        addAgent,
+        updateAgent,
+  deleteAgent,     
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -105,26 +162,16 @@ export default function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            {/* Public */}
             <Route path="/login" element={<Login />} />
 
-            {/* Protected */}
             <Route element={<ProtectedRoute />}>
               <Route element={<DashboardLayout />}>
-                <Route
-                  path="/"
-                  element={
-                    <>
-                      <ProductCards />
-                      <GraphsDashboardPage />
-                    </>
-                  }
-                />
+                <Route path="/" element={<><ProductCards /><GraphsDashboardPage /></>} />
                 <Route path="/category/:type" element={<StockCategoryPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
               </Route>
             </Route>
 
-            {/* Fallback */}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>

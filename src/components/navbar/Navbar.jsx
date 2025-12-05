@@ -1,6 +1,5 @@
 // src/components/navbar/Navbar.jsx
-
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -13,40 +12,49 @@ import {
   Tooltip,
 } from "@mui/material";
 import { LogOut, User, Settings } from "lucide-react";
-import { AuthContext } from "../../App";
 import { useNavigate } from "react-router-dom";
 
 export const NAVBAR_HEIGHT = 85;
 
 export default function Navbar() {
-  const authContext = useContext(AuthContext);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  if (!authContext) {
-    console.error("Navbar rendered outside AuthProvider");
-    return null;
-  }
+  const [displayName, setDisplayName] = useState("User");
+  const [avatarSrc, setAvatarSrc] = useState(null);
+  const [brandText, setBrandText] = useState("The Pickls");
 
-  const { isLoggedIn, logout } = authContext;
+  // User update listener — localStorage + event se
+  useEffect(() => {
+    const updateUserInfo = () => {
+      const saved = localStorage.getItem("user");
+      if (saved) {
+        try {
+          const u = JSON.parse(saved);
+          setDisplayName(u.fullName || u.username?.split("@")[0] || "User");
+          setAvatarSrc(u.avatarBase64 || null);
+          setBrandText(u.brandText || "The Pickls");
+        } catch (e) {
+          console.error("Failed to parse user from localStorage", e);
+        }
+      }
+    };
 
-  if (!isLoggedIn) {
-    return null;
-  }
+    updateUserInfo(); // Pehli baar load
+    window.addEventListener("userUpdated", updateUserInfo);
+    window.addEventListener("storage", updateUserInfo);
 
-  // Get current logged-in user from localStorage
-  const storedUser = localStorage.getItem("user");
-  const user = storedUser ? JSON.parse(storedUser) : null;
+    return () => {
+      window.removeEventListener("userUpdated", updateUserInfo);
+      window.removeEventListener("storage", updateUserInfo);
+    };
+  }, []);
 
-  // Dynamic values from user
-  const displayName = user?.username?.split("@")[0] || "User";
-  const brandText = user?.brandText || "The Pickls";
-
-  // DYNAMIC LOGO - This will automatically pick the correct one
+  // Logo based on brand
   const logoUrl =
     brandText === "Fevi"
-      ? "/By The fevi.png"   // Your exact filename (with space and capital letters)
+      ? "/By The fevi.png"
       : "https://thepickls.com/cdn/shop/files/the_pickls.png?v=1704872288";
 
   const handleAvatarClick = (event) => {
@@ -58,7 +66,8 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    logout();
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("user");
     handleClose();
     navigate("/login", { replace: true });
   };
@@ -82,13 +91,9 @@ export default function Navbar() {
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        sx={{
-          height: "100%",
-         
-          position: "relative", // ← THIS IS REQUIRED for perfect centering
-        }}
+        sx={{ height: "100%" }}
       >
-        {/* Logo + Dynamic Brand Name - Far Left */}
+        {/* Left - Logo + Brand Name */}
         <Stack direction="row" alignItems="center" spacing={2}>
           <Box
             component="img"
@@ -117,7 +122,7 @@ export default function Navbar() {
           </Typography>
         </Stack>
 
-        {/* TRUE CENTER TITLE - Perfectly centered no matter what */}
+        {/* Center Title */}
         <Typography
           variant="h5"
           sx={{
@@ -136,10 +141,11 @@ export default function Navbar() {
           Stock Inventory Management
         </Typography>
 
-        {/* Avatar Dropdown - Far Right */}
+        {/* Right - Avatar */}
         <Tooltip title="Account settings">
           <IconButton onClick={handleAvatarClick}>
             <Avatar
+              src={avatarSrc}
               sx={{
                 width: 46,
                 height: 46,
@@ -170,6 +176,24 @@ export default function Navbar() {
             {displayName}
           </MenuItem>
           <Divider />
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              navigate("/profile");
+            }}
+          >
+            <User size={18} style={{ marginRight: 12 }} />
+            Profile
+          </MenuItem>
+         <MenuItem
+  onClick={() => {
+    handleClose();
+    navigate("/profile?tab=user-access");
+  }}
+>
+  <User size={18} style={{ marginRight: 12 }} />
+  User Access
+</MenuItem>
           <MenuItem onClick={handleClose}>
             <Settings size={18} style={{ marginRight: 12 }} />
             Settings
