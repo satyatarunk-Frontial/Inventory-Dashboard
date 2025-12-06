@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+// src/components/sidebar/SideBar.jsx
+import React, { useEffect, useMemo, useState, useContext } from "react";
 import PropTypes from "prop-types";
 import { styled } from "@mui/material/styles";
 import {
@@ -15,7 +16,6 @@ import {
   alpha,
 } from "@mui/material";
 import {
-  
   Home,
   Layers,
   ArrowLeft,
@@ -28,98 +28,85 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import { ThemeContext } from "../../Global/ThemeContext";
 import categoriesData from "../../data/productCards.json";
 
-// Sizes
 export const SIDEBAR_WIDTH = 230;
 export const SIDEBAR_COLLAPSED = 72;
 const NAVBAR_HEIGHT = 85;
 
-const PALETTE = {
-  bg: "#ffffff",
-  rail: "linear-gradient(180deg, #fbfefe 0%, #f3f9f8 100%)",
-  border: "rgba(10, 20, 30, 0.08)",
-  text: "#0f2b2a",
-  accent: "#0f9d8e",
-  activeBg: "rgba(15, 157, 142, 0.12)",
-};
+// ⭐ THEME-BASED SIDEBAR COLORS
+const useSidebarPalette = (theme) => ({
+  bg: theme.page_bg ?? "#ffffff",
+  rail: theme.sidebar_rail ?? "linear-gradient(180deg, #fbfefe 0%, #f3f9f8 100%)",
+  border: theme.border_color ?? "#e2e8f0",
+  text: theme.text_primary ?? "#0f2b2a",
+  accent: theme.primary ?? "#0fa3b1",
+  activeBg: theme.active_bg ?? alpha(theme.primary ?? "#0fa3b1", 0.12),
+  shadow: theme.shadow ?? "0px 4px 20px rgba(0,0,0,0.08)",
+});
 
-const DEFAULT_COLORS = [
-  "#FF8A80",
-  "#FFD180",
-  "#FFF59D",
-  "#C8E6C9",
-  "#B3E5FC",
-  "#D1C4E9",
-  "#F8BBD0",
-];
-
-const Root = styled(Box)(({ theme }) => ({
+const Root = styled(Box)({
   position: "fixed",
   top: 0,
   left: 0,
   height: "100vh",
   zIndex: 1200,
   pointerEvents: "none",
-}));
+});
 
 const Panel = styled(Box, { shouldForwardProp: (p) => p !== "open" })(
-  ({ open, theme }) => ({
+  ({ open, palette }) => ({
     position: "absolute",
     left: 0,
     top: 0,
     height: "100vh",
     width: open ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED,
-    background: open ? PALETTE.bg : PALETTE.rail,
-    borderRight: `1px solid ${PALETTE.border}`,
-    boxShadow: open ? "8px 0 32px rgba(8, 24, 48, 0.12)" : "none",
+    background: open ? palette.bg : palette.rail,
+    borderRight: `1px solid ${palette.border}`,
+    boxShadow: open ? palette.shadow : "none",
     transition:
       "width 200ms cubic-bezier(.22,1,.36,1), background 200ms ease, box-shadow 200ms ease",
     padding: open
-      ? `${NAVBAR_HEIGHT + 20}px 18px 84px` // extra bottom padding so bottom toggle isn't overlapped
+      ? `${NAVBAR_HEIGHT + 20}px 18px 84px`
       : `${NAVBAR_HEIGHT + 16}px 14px 84px`,
     overflow: "auto",
     pointerEvents: "auto",
     zIndex: 1300,
-    willChange: "width, transform, opacity",
-    "& .MuiList-root": { paddingTop: 0 },
     "&::-webkit-scrollbar": { width: 6 },
     "&::-webkit-scrollbar-thumb": {
-      background: alpha(PALETTE.text, 0.12),
+      background: alpha(palette.text, 0.12),
       borderRadius: 3,
     },
   })
 );
 
 const IconWrap = styled(Box, {
-  shouldForwardProp: (p) => p !== "active" && p !== "small",
-})(({ active, small }) => ({
+  shouldForwardProp: (p) => p !== "active" && p !== "small" && p !== "palette",
+})(({ active, small, palette }) => ({
   width: small ? 40 : 48,
   height: small ? 40 : 46,
   borderRadius: 12,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  background: active ? PALETTE.activeBg : small ? "transparent" : "#fafafa",
-  border: `1px solid ${active ? PALETTE.accent : PALETTE.border}`,
-  color: active ? PALETTE.accent : PALETTE.text,
+  background: active ? palette.activeBg : small ? "transparent" : "#f7fafc",
+  border: `1px solid ${active ? palette.accent : palette.border}`,
+  color: active ? palette.accent : palette.text,
   transition: "all 180ms cubic-bezier(.22,1,.36,1)",
-  willChange: "transform, box-shadow",
   boxShadow: active
-    ? `0 6px 16px ${alpha(PALETTE.accent, 0.2)}`
+    ? `0 6px 16px ${alpha(palette.accent, 0.22)}`
     : "0 2px 8px rgba(8,24,48,0.05)",
 }));
 
-// Slightly smaller avatar so labels have more space and wrap less frequently
-const CategoryAvatar = styled(Avatar)(({ theme }) => ({
+const CategoryAvatar = styled(Avatar)({
   width: 32,
   height: 32,
   fontWeight: 700,
   fontSize: "0.88rem",
   border: "2px solid white",
   boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-}));
+});
 
 export default function SideBar({ initialOpen = true, onToggle }) {
   const [open, setOpen] = useState(initialOpen);
@@ -127,31 +114,27 @@ export default function SideBar({ initialOpen = true, onToggle }) {
   const [expanded, setExpanded] = useState(true);
   const navigate = useNavigate();
 
+  // ⭐ Get theme from context
+  const theme = useContext(ThemeContext);
+  const PALETTE = useSidebarPalette(theme);
+
   const categories = useMemo(() => categoriesData || [], []);
 
   useEffect(() => onToggle?.(open), [open, onToggle]);
 
-  // Toggle only via the bottom toggle button.
   const toggle = () => setOpen((v) => !v);
 
-  // handle navigation / selection
   const handleItemClick = (key, href, hasSubmenu) => {
     setActiveKey(key);
 
-    // Toggle submenu only when sidebar is open (because expanded submenu is a visible UI element).
-    // If sidebar is closed and user clicks icon, we DON'T open the panel (per request).
     if (open && hasSubmenu) {
       setExpanded((p) => !p);
     } else if (!open && hasSubmenu) {
-      // When closed and user clicks the categories icon, scroll to top so they can see the content,
-      // but do not open the panel.
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // Navigate if route present (clicking icons when closed should still navigate but not open).
     if (href) {
       navigate(href);
-      // ensure top of page after navigation
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -168,7 +151,7 @@ export default function SideBar({ initialOpen = true, onToggle }) {
 
   return (
     <Root>
-      <Panel open={open} aria-expanded={open}>
+      <Panel open={open} palette={PALETTE}>
         <Box sx={{ height: 12 }} />
 
         <List disablePadding>
@@ -182,7 +165,6 @@ export default function SideBar({ initialOpen = true, onToggle }) {
                 <Tooltip title={!open ? item.label : ""} placement="right">
                   <ListItemButton
                     onClick={() => {
-                      // Special behavior for Home: always go to route and scroll to top.
                       if (item.key === "home") {
                         navigate("/");
                         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -191,68 +173,54 @@ export default function SideBar({ initialOpen = true, onToggle }) {
                       }
                       handleItemClick(item.key, item.href, item.hasSubmenu);
                     }}
-                    component="button"
-                    sx={(theme) => ({
+                    sx={{
                       borderRadius: 3,
                       minHeight: 54,
-                      minWidth: open ? 230 : 48,
-                      py: 1,
-                      px: open ? 2 : 1.5,
-                      gap: open ? 3 : 0,
                       justifyContent: open ? "flex-start" : "center",
+                      gap: open ? 3 : 0,
                       background: isActive ? PALETTE.activeBg : "transparent",
-                      transition: "all 180ms cubic-bezier(.22,1,.36,1)",
-                      willChange: "transform, background, opacity",
-                      pr: open ? 2.5 : 1.5, // ensure there is right padding so chevron doesn't hit edge
-                      ...(open
-                        ? {
-                            "&:hover": {
-                              background: isActive
-                                ? PALETTE.activeBg
-                                : alpha(PALETTE.accent, 0.08),
-                              transform: "translateX(2px)",
-                            },
-                          }
-                        : {
-                            "&:hover": {
-                              background: "transparent",
-                              transform: "none",
-                            },
-                          }),
-                    })}
+                      "&:hover": {
+                        background: isActive
+                          ? PALETTE.activeBg
+                          : alpha(PALETTE.accent, 0.08),
+                        transform: "translateX(2px)",
+                      },
+                    }}
                   >
                     <ListItemIcon
                       sx={{
                         minWidth: open ? 55 : "auto",
-                        color: isActive ? PALETTE.accent : "inherit",
+                        color: isActive ? PALETTE.accent : PALETTE.text,
                       }}
                     >
-                      <IconWrap active={isActive} small={!open}>
+                      <IconWrap
+                        active={isActive}
+                        small={!open}
+                        palette={PALETTE}
+                      >
                         <Icon size={22} strokeWidth={2.2} />
                       </IconWrap>
                     </ListItemIcon>
 
-                    <Collapse in={open} orientation="horizontal" timeout={200}>
+                    {open && (
                       <ListItemText
                         primary={item.label}
                         primaryTypographyProps={{
                           fontWeight: 700,
-                          fontSize: "0.98rem",
                           color: isActive ? PALETTE.accent : PALETTE.text,
                         }}
                       />
-                    </Collapse>
+                    )}
 
                     {item.hasSubmenu && open && (
                       <ChevronDown
                         size={18}
                         style={{
-                          marginLeft: "8px", // small margin so chevron not glued to edge
+                          marginLeft: 8,
                           transform: isCategoriesOpen
                             ? "rotate(180deg)"
                             : "rotate(0deg)",
-                          transition: "transform 180ms",
-                          willChange: "transform",
+                          transition: "180ms",
                         }}
                       />
                     )}
@@ -260,63 +228,48 @@ export default function SideBar({ initialOpen = true, onToggle }) {
                 </Tooltip>
 
                 {item.hasSubmenu && (
-                  // Submenu list is indented and appears directly under Categories.
                   <Collapse
                     in={open && isCategoriesOpen}
-                    timeout={220}
+                    timeout={200}
                     unmountOnExit
                   >
                     <List disablePadding sx={{ pl: 1.25, pt: 1, pb: 1 }}>
                       {categories.map((cat, i) => {
-                        const catColor =
-                          cat?.color ??
-                          cat?.hex ??
-                          cat?.bg ??
-                          DEFAULT_COLORS[i % DEFAULT_COLORS.length];
-                        const slug = cat?.slug ?? `cat-${i}`;
-                        const label = cat?.label ?? cat?.name ?? "Category";
+                        const color =
+                          cat.color ??
+                          cat.hex ??
+                          cat.bg ??
+                          ["#FF8A80", "#FFD180", "#FFF59D", "#C8E6C9"][i % 4];
 
                         return (
                           <ListItemButton
-                            key={slug}
+                            key={cat.slug}
                             onClick={() => {
-                              navigate(`/category/${slug}`);
+                              navigate(`/category/${cat.slug}`);
                               window.scrollTo({ top: 0, behavior: "smooth" });
                             }}
-                            component="button"
                             sx={{
                               borderRadius: 2.5,
                               py: 1.2,
                               my: 0.5,
-                              pl: 2.5, // <<<<<< SHIFTED LEFT HERE
-                              minHeight: 48,
-                              transition: "transform 160ms, background 160ms",
-                              willChange: "transform, background, box-shadow",
+                              pl: 2.5,
                               "&:hover": {
-                                background: alpha(catColor, 0.12),
-                                transform: "translateX(6px)",
-                                boxShadow: `0 4px 12px ${alpha(
-                                  catColor,
-                                  0.12
-                                )}`,
+                                background: alpha(color, 0.15),
+                                transform: "translateX(5px)",
                               },
                             }}
                           >
                             <ListItemIcon sx={{ minWidth: 40 }}>
-                              <CategoryAvatar sx={{ bgcolor: catColor }}>
-                                {label?.[0]?.toUpperCase() || "?"}
+                              <CategoryAvatar sx={{ bgcolor: color }}>
+                                {cat.label[0].toUpperCase()}
                               </CategoryAvatar>
                             </ListItemIcon>
 
                             <ListItemText
-                              primary={label}
+                              primary={cat.label}
                               primaryTypographyProps={{
                                 fontWeight: 600,
-                                sx: {
-                                  whiteSpace: "normal",
-                                  overflowWrap: "break-word",
-                                  maxWidth: "120px",
-                                },
+                                whiteSpace: "normal",
                               }}
                             />
                           </ListItemButton>
@@ -330,7 +283,7 @@ export default function SideBar({ initialOpen = true, onToggle }) {
           })}
         </List>
 
-        {/* bottom toggle - sticky and high zIndex so it doesn't get hidden by scroll/content */}
+        {/* Toggle Button */}
         <Box
           sx={{
             position: "sticky",
@@ -339,40 +292,29 @@ export default function SideBar({ initialOpen = true, onToggle }) {
             alignItems: "center",
             justifyContent: open ? "flex-start" : "center",
             px: open ? 2 : 0,
-            mt: 2,
-            zIndex: 1400,
-            pointerEvents: "auto",
-            // add small translucent backdrop to ensure visibility over content if needed
-            // backgroundColor: alpha("#fff", 0.001)
           }}
         >
           <Tooltip
-            title={!open ? "Open sidebar" : "Close sidebar"}
+            title={!open ? "Open Sidebar" : "Close Sidebar"}
             placement={!open ? "right" : "left"}
           >
-            <IconButton
-              onClick={toggle}
-              size="large"
-              aria-label={open ? "Close sidebar" : "Open sidebar"}
-            >
-              <IconWrap small={!open} active={false}>
+            <IconButton onClick={toggle}>
+              <IconWrap small={!open} active={false} palette={PALETTE}>
                 {open ? <ArrowLeft size={22} /> : <ArrowRight size={22} />}
               </IconWrap>
             </IconButton>
           </Tooltip>
 
-          <Collapse in={open} orientation="horizontal" timeout={200}>
-            <Box sx={{ ml: 2, display: "flex", alignItems: "center" }}>
-              <Typography
-                fontWeight={700}
-                fontSize="0.95rem"
-                color={PALETTE.text}
-                sx={{ userSelect: "none" }}
-              >
-                Close
-              </Typography>
-            </Box>
-          </Collapse>
+          {open && (
+            <Typography
+              fontWeight={700}
+              fontSize="0.95rem"
+              color={PALETTE.text}
+              sx={{ ml: 2 }}
+            >
+              Close
+            </Typography>
+          )}
         </Box>
       </Panel>
     </Root>

@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useContext } from "react";
 import { ThemeContext } from "../../Global/ThemeContext";
+import { AuthContext } from "../../App";
+
 import {
   Box,
   Typography,
@@ -32,6 +34,9 @@ export default function Navbar() {
 
   // ⭐ MAKE SAFE FALLBACK THEME (AVOID undefined error)
 const theme = useContext(ThemeContext);
+
+const { logout } = useContext(AuthContext);
+
 
   // User update listener
   useEffect(() => {
@@ -68,11 +73,11 @@ const theme = useContext(ThemeContext);
   const handleClose = () => setAnchorEl(null);
 
   const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("user");
-    handleClose();
-    navigate("/login", { replace: true });
-  };
+  handleClose();  // close menu
+  logout();       // <-- MAIN FIX: this updates context instantly
+  navigate("/login", { replace: true });
+};
+
 
   return (
     <Box
