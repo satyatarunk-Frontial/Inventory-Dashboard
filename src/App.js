@@ -1,8 +1,18 @@
 // src/App.js
 import React, { useState, createContext, useContext, useEffect } from "react";
-import { useLocation, BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import {
+  useLocation,
+  BrowserRouter,
+  Routes,
+  Route,
+  Outlet,
+  Navigate,
+} from "react-router-dom";
+import { ThemeProvider as MUIThemeProvider, createTheme } from "@mui/material/styles";
 import "./Global/themeLoader";
+
+// ⭐ CUSTOM THEME CONTEXT (Live theme update)
+import { ThemeProvider as CustomThemeProvider } from "./Global/ThemeContext";
 
 import SideBar, { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED } from "./components/sideBar/SideBar";
 import Navbar, { NAVBAR_HEIGHT } from "./components/navbar/Navbar";
@@ -31,7 +41,6 @@ function AuthProvider({ children }) {
     return saved ? JSON.parse(saved) : null;
   });
 
-  // ⭐ AGENTS STATE (second file)
   const [agents, setAgents] = useState(() => {
     const saved = localStorage.getItem("agents");
     return saved ? JSON.parse(saved) : [];
@@ -80,7 +89,6 @@ function AuthProvider({ children }) {
     window.dispatchEvent(new Event("userUpdated"));
   };
 
-  // Sync login/user/agents across tabs
   useEffect(() => {
     const handler = (e) => {
       if (e.key === "isLoggedIn") setIsLoggedIn(e.newValue === "true");
@@ -89,18 +97,6 @@ function AuthProvider({ children }) {
     };
     window.addEventListener("storage", handler);
     return () => window.removeEventListener("storage", handler);
-  }, []);
-
-  // Load custom theme on refresh (from first file)
-  useEffect(() => {
-    const savedTheme = JSON.parse(localStorage.getItem("customTheme"));
-    if (savedTheme) {
-      document.body.style.background = savedTheme.bgColor;
-      document.body.style.boxShadow =
-        `${savedTheme.boxShadowValue} ${savedTheme.boxShadowColor}`;
-      document.body.style.border =
-        `${savedTheme.borderWidth} ${savedTheme.borderStyle} ${savedTheme.borderColor}`;
-    }
   }, []);
 
   return (
@@ -138,7 +134,7 @@ function DashboardLayout() {
   const marginLeft = sidebarOpen ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED;
 
   const location = useLocation();
-  const hideFooter = location.pathname === "/settings"; // from file1
+  const hideFooter = location.pathname === "/settings";
 
   return (
     <>
@@ -166,61 +162,53 @@ function DashboardLayout() {
 }
 
 // =========================
-// THEME
+// MUI THEME
 // =========================
-const theme = createTheme({
+const muiTheme = createTheme({
   typography: {
     fontFamily: "Poppins, sans-serif",
-    h1: { fontFamily: "Alata, sans-serif" },
-    h2: { fontFamily: "Alata, sans-serif" },
-    h3: { fontFamily: "Alata, sans-serif" },
-    h4: { fontFamily: "Alata, sans-serif" },
-    h5: { fontFamily: "Alata, sans-serif" },
-    h6: { fontFamily: "Alata, sans-serif" },
   },
 });
 
 // =========================
-// APP
+// MAIN APP
 // =========================
 export default function App() {
   return (
-    <ThemeProvider theme={theme}>
+    <MUIThemeProvider theme={muiTheme}>
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Public */}
-            <Route path="/login" element={<Login />} />
 
-            {/* Protected */}
-            <Route element={<ProtectedRoute />}>
-              <Route element={<DashboardLayout />}>
+        {/* ⭐ FIXED: ADDED CUSTOM THEME PROVIDER HERE */}
+        <CustomThemeProvider>
 
-                <Route
-                  path="/"
-                  element={
-                    <>
-                      <ProductCards />
-                      <GraphsDashboardPage />
-                    </>
-                  }
-                />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
 
-                <Route path="/category/:type" element={<StockCategoryPage />} />
+              <Route element={<ProtectedRoute />}>
+                <Route element={<DashboardLayout />}>
+                  <Route
+                    path="/"
+                    element={
+                      <>
+                        <ProductCards />
+                        <GraphsDashboardPage />
+                      </>
+                    }
+                  />
 
-                {/* FROM FILE 1 */}
-                <Route path="/settings" element={<Settings />} />
-
-                {/* FROM FILE 2 */}
-                <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/category/:type" element={<StockCategoryPage />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                </Route>
               </Route>
-            </Route>
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </BrowserRouter>
+              <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
+          </BrowserRouter>
+
+        </CustomThemeProvider>
       </AuthProvider>
-    </ThemeProvider>
+    </MUIThemeProvider>
   );
 }

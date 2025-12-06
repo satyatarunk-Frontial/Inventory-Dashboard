@@ -1,11 +1,19 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function SettingsTheme() {
   const [bgColor, setBgColor] = useState("#ffffff");
   const [boxShadowColor, setBoxShadowColor] = useState("#000000");
   const [borderColor, setBorderColor] = useState("#000000");
-  
+
+  // ⭐ Added white theme also
   const presetThemes = {
+    white: {
+      bg: "#ffffff",
+      shadow: "rgba(0,0,0,0.05)",
+      border: "#e5e7eb",
+    },
     blue: {
       bg: "#e6f0ff",
       shadow: "#005eff55",
@@ -38,22 +46,29 @@ export default function SettingsTheme() {
     setBoxShadowColor(presetThemes[theme].shadow);
     setBorderColor(presetThemes[theme].border);
   };
+  
+  // ⭐ Apply theme instantly without page refresh
+  const handleUpdate = () => {
+    const updatedTheme = {
+      page_bg: bgColor,
+      shadow: boxShadowColor,
+      border_color: borderColor,
+      card_bg: "#ffffff",
+      text_primary: "#0f172a",
+    };
 
- const handleUpdate = () => {
-  const updatedTheme = {
-    ...presetThemes.custom,
-    page_bg: bgColor,
-    shadow: boxShadowColor,
-    border_color: borderColor,
+    // Save to localStorage
+    localStorage.setItem("customFullTheme", JSON.stringify(updatedTheme));
+
+    // ⭐ Dispatch event → Entire app updates instantly
+    window.dispatchEvent(new Event("themeUpdated"));
+
+    // ⭐ Toast instead of alert
+    toast.success("Theme updated!", {
+      position: "top-center",
+      autoClose: 1200,
+    });
   };
-
-  localStorage.setItem(
-    "customFullTheme",
-    JSON.stringify(updatedTheme)
-  );
-
-  alert("Theme updated! Reload the page.");
-};
 
   return (
     <div
@@ -87,7 +102,7 @@ export default function SettingsTheme() {
           marginBottom: "25px",
         }}
       >
-        {["blue", "green", "red", "purple", "orange"].map((t) => (
+        {["white", "blue", "green", "red", "purple", "orange"].map((t) => (
           <button
             key={t}
             onClick={() => applyPreset(t)}
@@ -96,11 +111,13 @@ export default function SettingsTheme() {
               borderRadius: "6px",
               border: "none",
               cursor: "pointer",
-              color: "white",
+              color: t === "white" ? "#333" : "white",
               textTransform: "capitalize",
-              width: "18%",
+              width: "15.5%",
               background:
-                t === "blue"
+                t === "white"
+                  ? "#ffffff"
+                  : t === "blue"
                   ? "#005eff"
                   : t === "green"
                   ? "#16a34a"
@@ -109,106 +126,13 @@ export default function SettingsTheme() {
                   : t === "purple"
                   ? "#7e22ce"
                   : "#f97316",
+              boxShadow:
+                t === "white" ? "0 0 8px rgba(0,0,0,0.1)" : "none",
             }}
           >
             {t}
           </button>
         ))}
-      </div>
-
-      {/* Background Color */}
-      <div style={{ marginBottom: "20px" }}>
-        <label style={{ fontSize: "15px", color: "#444", fontWeight: 500 }}>
-          Background Color
-        </label>
-
-        <div
-          style={{
-            marginTop: "8px",
-            display: "flex",
-            alignItems: "center",
-            gap: "15px",
-          }}
-        >
-          <input
-            type="color"
-            value={bgColor}
-            onChange={(e) => setBgColor(e.target.value)}
-            style={{
-              width: "40px",
-              height: "40px",
-              cursor: "pointer",
-              border: "none",
-              outline: "none",
-            }}
-          />
-
-          <span style={{ fontSize: "14px", color: "#666" }}>{bgColor}</span>
-        </div>
-      </div>
-
-      {/* Box Shadow Color */}
-      <div style={{ marginBottom: "20px" }}>
-        <label style={{ fontSize: "15px", color: "#444", fontWeight: 500 }}>
-          Box Shadow Color
-        </label>
-
-        <div
-          style={{
-            marginTop: "8px",
-            display: "flex",
-            alignItems: "center",
-            gap: "15px",
-          }}
-        >
-          <input
-            type="color"
-            value={boxShadowColor}
-            onChange={(e) => setBoxShadowColor(e.target.value)}
-            style={{
-              width: "40px",
-              height: "40px",
-              cursor: "pointer",
-              border: "none",
-              outline: "none",
-            }}
-          />
-
-          <span style={{ fontSize: "14px", color: "#666" }}>
-            {boxShadowColor}
-          </span>
-        </div>
-      </div>
-
-      {/* Border Color */}
-      <div style={{ marginBottom: "20px" }}>
-        <label style={{ fontSize: "15px", color: "#444", fontWeight: 500 }}>
-          Border Color
-        </label>
-
-        <div
-          style={{
-            marginTop: "8px",
-            display: "flex",
-            alignItems: "center",
-            gap: "15px",
-          }}
-        >
-          <input
-            type="color"
-            value={borderColor}
-            onChange={(e) => setBorderColor(e.target.value)}
-            style={{
-              width: "40px",
-              height: "40px",
-              cursor: "pointer",
-              border: "none",
-              outline: "none",
-            }}
-          />
-
-          <span style={{ fontSize: "14px", color: "#666" }}>{borderColor}</span>
-        </div>
       </div>
 
       {/* Update Button */}
@@ -231,17 +155,6 @@ export default function SettingsTheme() {
       >
         Update Theme
       </button>
-
-      <p
-        style={{
-          marginTop: "20px",
-          textAlign: "center",
-          fontSize: "14px",
-          color: "#888",
-        }}
-      >
-        Please reload and relogin the site to see your themed changes.
-      </p>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 // src/components/navbar/Navbar.jsx
 import React, { useState, useEffect } from "react";
+import { useContext } from "react";
+import { ThemeContext } from "../../Global/ThemeContext";
 import {
   Box,
   Typography,
@@ -29,7 +31,7 @@ export default function Navbar() {
   const [brandText, setBrandText] = useState("The Pickls");
 
   // ⭐ MAKE SAFE FALLBACK THEME (AVOID undefined error)
-  const theme = AppTheme.themes.custom || AppTheme.themes.blue;
+const theme = useContext(ThemeContext);
 
   // User update listener
   useEffect(() => {
