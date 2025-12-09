@@ -23,7 +23,7 @@ export default function ProfilePage() {
     location: "",
     joined: "",
   };
-
+  
   const tabParam = searchParams.get("tab");
   const initialTab = () => {
     switch (tabParam) {
