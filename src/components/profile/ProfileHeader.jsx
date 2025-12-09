@@ -22,7 +22,7 @@ export default function ProfileHeader({ user, onEdit }) {
       <Box
         sx={{
           height: { xs: 180, md: 280 },
-          bgcolor: user?.coverBase64 ? "transparent" : "#1a1a1a",
+          bgcolor: user?.coverBase64 ? "transparent" : "#169a51ff",
           backgroundImage: user?.coverBase64 ? `url(${user.coverBase64})` : "none",
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -96,9 +96,9 @@ export default function ProfileHeader({ user, onEdit }) {
             top: 16,
             right: 16,
             borderRadius: 2,
-            bgcolor: "#1a1a1a",
+            bgcolor: "#12892dff",
             color: "white",
-            "&:hover": { bgcolor: "#000" },
+            "&:hover": { bgcolor: "#2da309ff" },
             px: 3,
             py: 1,
           }}

@@ -55,7 +55,7 @@ export default function SettingsTab() {
             <Typography>Two-Factor Authentication</Typography>
             <Typography color="text.secondary" fontSize="0.9rem">Add an extra layer of security</Typography>
           </Box>
-          <Button variant="contained" size="small" sx={{ bgcolor: "#1a1a1a" }}>Enable 2FA</Button>
+          <Button variant="contained" size="small" sx={{ bgcolor: "#19961fff" }}>Enable 2FA</Button>
         </Box>
       </Paper>
     </Box>

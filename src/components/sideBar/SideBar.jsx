@@ -31,18 +31,19 @@ import { useNavigate } from "react-router-dom";
 import { ThemeContext } from "../../Global/ThemeContext";
 import categoriesData from "../../data/productCards.json";
 
-export const SIDEBAR_WIDTH = 230;
-export const SIDEBAR_COLLAPSED = 72;
+export const SIDEBAR_WIDTH = 260;
+export const SIDEBAR_COLLAPSED = 82;
 const NAVBAR_HEIGHT = 85;
 
-// ⭐ THEME-BASED SIDEBAR COLORS
+// Updated Green Theme (Modern & Clean)
 const useSidebarPalette = (theme) => ({
   bg: theme.page_bg ?? "#ffffff",
-  rail: theme.sidebar_rail ?? "linear-gradient(180deg, #fbfefe 0%, #f3f9f8 100%)",
+  rail:
+    theme.sidebar_rail ?? "linear-gradient(180deg, #f8fff8 0%, #f0fdf4 100%)",
   border: theme.border_color ?? "#e2e8f0",
   text: theme.text_primary ?? "#0f2b2a",
-  accent: theme.primary ?? "#0fa3b1",
-  activeBg: theme.active_bg ?? alpha(theme.primary ?? "#0fa3b1", 0.12),
+  accent: theme.primary ?? "#22c55e", // Beautiful Green
+  activeBg: theme.active_bg ?? alpha("#22c55e", 0.12),
   shadow: theme.shadow ?? "0px 4px 20px rgba(0,0,0,0.08)",
 });
 
@@ -66,20 +67,36 @@ const Panel = styled(Box, { shouldForwardProp: (p) => p !== "open" })(
     borderRight: `1px solid ${palette.border}`,
     boxShadow: open ? palette.shadow : "none",
     transition:
-      "width 200ms cubic-bezier(.22,1,.36,1), background 200ms ease, box-shadow 200ms ease",
-    padding: open
-      ? `${NAVBAR_HEIGHT + 20}px 18px 84px`
-      : `${NAVBAR_HEIGHT + 16}px 14px 84px`,
-    overflow: "auto",
+      "width 220ms cubic-bezier(0.22, 1, 0.36, 1), background 220ms ease",
+    display: "flex",
+    flexDirection: "column",
     pointerEvents: "auto",
     zIndex: 1300,
-    "&::-webkit-scrollbar": { width: 6 },
-    "&::-webkit-scrollbar-thumb": {
-      background: alpha(palette.text, 0.12),
-      borderRadius: 3,
-    },
   })
 );
+
+const ScrollableContent = styled(Box)({
+  flex: 1,
+  overflowY: "auto",
+  overflowX: "hidden",
+  padding: "18px 18px 20px",
+  marginTop: NAVBAR_HEIGHT + 20,
+  "&::-webkit-scrollbar": { width: 6 },
+  "&::-webkit-scrollbar-thumb": {
+    background: "rgba(34, 197, 94, 0.2)",
+    borderRadius: 3,
+  },
+});
+
+const BottomSection = styled(Box)(({ palette }) => ({
+  position: "sticky",
+  bottom: 0,
+  background: palette.bg,
+  borderTop: `1px solid ${palette.border}`,
+  padding: "16px 18px",
+  backdropFilter: "blur(10px)",
+  zIndex: 10,
+}));
 
 const IconWrap = styled(Box, {
   shouldForwardProp: (p) => p !== "active" && p !== "small" && p !== "palette",
@@ -93,7 +110,7 @@ const IconWrap = styled(Box, {
   background: active ? palette.activeBg : small ? "transparent" : "#f7fafc",
   border: `1px solid ${active ? palette.accent : palette.border}`,
   color: active ? palette.accent : palette.text,
-  transition: "all 180ms cubic-bezier(.22,1,.36,1)",
+  transition: "all 180ms ease",
   boxShadow: active
     ? `0 6px 16px ${alpha(palette.accent, 0.22)}`
     : "0 2px 8px rgba(8,24,48,0.05)",
@@ -113,11 +130,8 @@ export default function SideBar({ initialOpen = true, onToggle }) {
   const [activeKey, setActiveKey] = useState("home");
   const [expanded, setExpanded] = useState(true);
   const navigate = useNavigate();
-
-  // ⭐ Get theme from context
   const theme = useContext(ThemeContext);
   const PALETTE = useSidebarPalette(theme);
-
   const categories = useMemo(() => categoriesData || [], []);
 
   useEffect(() => onToggle?.(open), [open, onToggle]);
@@ -130,7 +144,8 @@ export default function SideBar({ initialOpen = true, onToggle }) {
     if (open && hasSubmenu) {
       setExpanded((p) => !p);
     } else if (!open && hasSubmenu) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      setOpen(true);
+      setExpanded(true);
     }
 
     if (href) {
@@ -152,170 +167,175 @@ export default function SideBar({ initialOpen = true, onToggle }) {
   return (
     <Root>
       <Panel open={open} palette={PALETTE}>
-        <Box sx={{ height: 12 }} />
+        {/* Scrollable Menu Area */}
+        <ScrollableContent>
+          <List disablePadding>
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeKey === item.key;
+              const isCategoriesOpen = item.key === "categories" && expanded;
 
-        <List disablePadding>
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeKey === item.key;
-            const isCategoriesOpen = item.key === "categories" && expanded;
-
-            return (
-              <Box key={item.key} sx={{ mb: 0.75 }}>
-                <Tooltip title={!open ? item.label : ""} placement="right">
-                  <ListItemButton
-                    onClick={() => {
-                      if (item.key === "home") {
-                        navigate("/");
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                        setActiveKey("home");
-                        return;
+              return (
+                <Box key={item.key} sx={{ mb: 0.5 }}>
+                  <Tooltip title={!open ? item.label : ""} placement="right">
+                    <ListItemButton
+                      onClick={() =>
+                        handleItemClick(item.key, item.href, item.hasSubmenu)
                       }
-                      handleItemClick(item.key, item.href, item.hasSubmenu);
-                    }}
-                    sx={{
-                      borderRadius: 3,
-                      minHeight: 54,
-                      justifyContent: open ? "flex-start" : "center",
-                      gap: open ? 3 : 0,
-                      background: isActive ? PALETTE.activeBg : "transparent",
-                      "&:hover": {
-                        background: isActive
-                          ? PALETTE.activeBg
-                          : alpha(PALETTE.accent, 0.08),
-                        transform: "translateX(2px)",
-                      },
-                    }}
-                  >
-                    <ListItemIcon
                       sx={{
-                        minWidth: open ? 55 : "auto",
-                        color: isActive ? PALETTE.accent : PALETTE.text,
+                        borderRadius: 3,
+                        minHeight: 50,
+                        justifyContent: open ? "flex-start" : "center",
+                        gap: open ? 3 : 0,
+                        py: 1,
+                        background: isActive ? PALETTE.activeBg : "transparent",
+                        "&:hover": {
+                          background: isActive
+                            ? PALETTE.activeBg
+                            : alpha(PALETTE.accent, 0.08),
+                          transform: "translateX(3px)",
+                        },
                       }}
                     >
-                      <IconWrap
-                        active={isActive}
-                        small={!open}
-                        palette={PALETTE}
-                      >
-                        <Icon size={22} strokeWidth={2.2} />
-                      </IconWrap>
-                    </ListItemIcon>
-
-                    {open && (
-                      <ListItemText
-                        primary={item.label}
-                        primaryTypographyProps={{
-                          fontWeight: 700,
+                      <ListItemIcon
+                        sx={{
+                          minWidth: open ? 55 : "auto",
                           color: isActive ? PALETTE.accent : PALETTE.text,
                         }}
-                      />
-                    )}
+                      >
+                        <IconWrap
+                          active={isActive}
+                          small={!open}
+                          palette={PALETTE}
+                        >
+                          <Icon size={22} strokeWidth={2.2} />
+                        </IconWrap>
+                      </ListItemIcon>
 
-                    {item.hasSubmenu && open && (
-                      <ChevronDown
-                        size={18}
-                        style={{
-                          marginLeft: 8,
-                          transform: isCategoriesOpen
-                            ? "rotate(180deg)"
-                            : "rotate(0deg)",
-                          transition: "180ms",
-                        }}
-                      />
-                    )}
-                  </ListItemButton>
-                </Tooltip>
-
-                {item.hasSubmenu && (
-                  <Collapse
-                    in={open && isCategoriesOpen}
-                    timeout={200}
-                    unmountOnExit
-                  >
-                    <List disablePadding sx={{ pl: 1.25, pt: 1, pb: 1 }}>
-                      {categories.map((cat, i) => {
-                        const color =
-                          cat.color ??
-                          cat.hex ??
-                          cat.bg ??
-                          ["#FF8A80", "#FFD180", "#FFF59D", "#C8E6C9"][i % 4];
-
-                        return (
-                          <ListItemButton
-                            key={cat.slug}
-                            onClick={() => {
-                              navigate(`/category/${cat.slug}`);
-                              window.scrollTo({ top: 0, behavior: "smooth" });
+                      {open && (
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            flexGrow: 1,
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <ListItemText
+                            primary={item.label}
+                            primaryTypographyProps={{
+                              fontWeight: 600,
+                              color: isActive ? PALETTE.accent : PALETTE.text,
                             }}
-                            sx={{
-                              borderRadius: 2.5,
-                              py: 1.2,
-                              my: 0.5,
-                              pl: 2.5,
-                              "&:hover": {
-                                background: alpha(color, 0.15),
-                                transform: "translateX(5px)",
-                              },
-                            }}
-                          >
-                            <ListItemIcon sx={{ minWidth: 40 }}>
-                              <CategoryAvatar sx={{ bgcolor: color }}>
-                                {cat.label[0].toUpperCase()}
-                              </CategoryAvatar>
-                            </ListItemIcon>
+                          />
 
-                            <ListItemText
-                              primary={cat.label}
-                              primaryTypographyProps={{
-                                fontWeight: 600,
-                                whiteSpace: "normal",
+                          {item.hasSubmenu && (
+                            <ChevronDown
+                              size={20}
+                              style={{
+                                marginLeft: 12,
+                                marginRight: 8,
+                                transform: isCategoriesOpen
+                                  ? "rotate(180deg)"
+                                  : "rotate(0deg)",
+                                transition: "transform 200ms ease",
+                                opacity: 0.7,
+                                flexShrink: 0,
                               }}
                             />
-                          </ListItemButton>
-                        );
-                      })}
-                    </List>
-                  </Collapse>
+                          )}
+                        </Box>
+                      )}
+                    </ListItemButton>
+                  </Tooltip>
+
+                  {item.hasSubmenu && (
+                    <Collapse
+                      in={open && isCategoriesOpen}
+                      timeout={240}
+                      unmountOnExit
+                    >
+                      <List disablePadding sx={{ pl: 1, pt: 1 }}>
+                        {categories.map((cat, i) => {
+                          const color =
+                            cat.color ??
+                            cat.hex ??
+                            cat.bg ??
+                            ["#22c55e", "#16a34a", "#4ade80", "#86efac"][i % 4];
+
+                          return (
+                            <ListItemButton
+                              key={cat.slug}
+                              onClick={() => {
+                                navigate(`/category/${cat.slug}`);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
+                              sx={{
+                                borderRadius: 2.5,
+                                py: 1,
+                                my: 0.4,
+                                pl: 5.5,
+                                "&:hover": {
+                                  background: alpha(color, 0.15),
+                                  transform: "translateX(4px)",
+                                },
+                              }}
+                            >
+                              <ListItemIcon sx={{ minWidth: 40 }}>
+                                <CategoryAvatar sx={{ bgcolor: color }}>
+                                  {cat.label[0].toUpperCase()}
+                                </CategoryAvatar>
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={cat.label}
+                                primaryTypographyProps={{
+                                  fontWeight: 600,
+                                  fontSize: "0.9rem",
+                                }}
+                              />
+                            </ListItemButton>
+                          );
+                        })}
+                      </List>
+                    </Collapse>
+                  )}
+                </Box>
+              );
+            })}
+          </List>
+        </ScrollableContent>
+
+        {/* Fixed Bottom Section - Always Visible */}
+        <BottomSection palette={PALETTE}>
+          <Tooltip
+            title={!open ? "Expand Sidebar" : "Collapse Sidebar"}
+            placement="right"
+          >
+            <IconButton onClick={toggle} sx={{ width: "100%" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  gap: 2,
+                }}
+              >
+                <IconWrap small={!open} active={false} palette={PALETTE}>
+                  {open ? <ArrowLeft size={22} /> : <ArrowRight size={22} />}
+                </IconWrap>
+                {open && (
+                  <Typography
+                    fontWeight={700}
+                    fontSize="0.95rem"
+                    color={PALETTE.text}
+                  >
+                    Close
+                  </Typography>
                 )}
               </Box>
-            );
-          })}
-        </List>
-
-        {/* Toggle Button */}
-        <Box
-          sx={{
-            position: "sticky",
-            bottom: 20,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: open ? "flex-start" : "center",
-            px: open ? 2 : 0,
-          }}
-        >
-          <Tooltip
-            title={!open ? "Open Sidebar" : "Close Sidebar"}
-            placement={!open ? "right" : "left"}
-          >
-            <IconButton onClick={toggle}>
-              <IconWrap small={!open} active={false} palette={PALETTE}>
-                {open ? <ArrowLeft size={22} /> : <ArrowRight size={22} />}
-              </IconWrap>
             </IconButton>
           </Tooltip>
-
-          {open && (
-            <Typography
-              fontWeight={700}
-              fontSize="0.95rem"
-              color={PALETTE.text}
-              sx={{ ml: 2 }}
-            >
-              Close
-            </Typography>
-          )}
-        </Box>
+        </BottomSection>
       </Panel>
     </Root>
   );
