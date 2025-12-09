@@ -32,7 +32,6 @@ export default function Navbar() {
   const [avatarSrc, setAvatarSrc] = useState(null);
   const [brandText, setBrandText] = useState("The Pickls");
 
-  // ⭐ MAKE SAFE FALLBACK THEME (AVOID undefined error)
 const theme = useContext(ThemeContext);
 
 const { logout } = useContext(AuthContext);
@@ -65,7 +64,7 @@ const { logout } = useContext(AuthContext);
   }, []);
 
   const logoUrl =
-    brandText === "Fevi"
+    brandText === "Flavi"
       ? "/By The fevi.png"
       : "https://thepickls.com/cdn/shop/files/the_pickls.png?v=1704872288";
 
@@ -119,7 +118,7 @@ const { logout } = useContext(AuthContext);
               boxShadow: theme.card_shadow_strong,
             }}
           />
-
+          
           <Typography
             variant="h5"
             sx={{
