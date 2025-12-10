@@ -9,7 +9,10 @@ import PieChartGraph from "../components/graphs/PieChartGraph";
 import StockSpeedometerGraph from "../components/graphs/SpeedometerGraph";
 import StockVsSalesBarChart from "../components/graphs/StockVsSalesGraph";
 
-import { mergeAllCategories, filterItemsByCategory } from "../components/graphs/graphUtils";
+import {
+  mergeAllCategories,
+  filterItemsByCategory,
+} from "../components/graphs/graphUtils";
 
 // EXISTING CATEGORIES
 import nonveg from "../data/nonveg.json";
@@ -49,7 +52,8 @@ export default function GraphDashboardpage() {
         py: 4,
         pb: 10,
         px: { xs: 2, md: 4 },
-        background: "linear-gradient(180deg, #f9fafb 0%, #eef2ff 35%, #e0f2fe 100%)",
+        background:
+          "linear-gradient(180deg, #f9fafb 0%, #eef2ff 35%, #e0f2fe 100%)",
       }}
     >
       <Box sx={{ maxWidth: "1400px", mx: "auto" }}>
@@ -76,38 +80,40 @@ export default function GraphDashboardpage() {
 
         {/* ONLY CHANGE: Force side-by-side layout with fixed height */}
         <Grid container spacing={4} sx={{ mb: 2 }}>
-          <Grid
-            item
-            xs={12}
-            md={6}
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              minHeight: { xs: "auto", md: "520px" }, // Prevents stacking on large screens
-            }}
-          >
-            <Box sx={{ width: "100%", maxWidth: 760, }}>
-              <PieChartGraph items={filteredItems} />
-            </Box>
-          </Grid>
+  {/* Pie Chart - Left on laptop+, Top on mobile/tablet */}
+  <Grid
+    item
+    xs={12}           // Full width on mobile
+    md={6}            // Half width from 900px upwards (laptops & above)
+    sx={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      minHeight: { xs: 420, md: 520 },
+    }}
+  >
+    <Box sx={{ width: "100%", maxWidth: 760 }}>
+      <PieChartGraph items={filteredItems} />
+    </Box>
+  </Grid>
 
-          <Grid
-            item
-            xs={12}
-            md={6}
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              minHeight: { xs: "auto", md: "520px" },
-            }}
-          >
-            <Box sx={{ width: "100%", minWidth:320, minHeight:420, }}>
-              <StockSpeedometerGraph items={filteredItems} sx= {{ minHeight:800}} />
-            </Box>
-          </Grid>
-        </Grid>
+  {/* Speedometer - Right on laptop+, Bottom on mobile/tablet */}
+  <Grid
+    item
+    xs={12}
+    md={6}
+    sx={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      minHeight: { xs: 420, md: 520 },
+    }}
+  >
+    <Box sx={{ width: "100%", minWidth: { xs: 300, md: 320 }, minHeight: 420 }}>
+      <StockSpeedometerGraph items={filteredItems} />
+    </Box>
+  </Grid>
+</Grid>
       </Box>
     </Box>
   );

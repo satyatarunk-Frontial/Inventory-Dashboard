@@ -1,5 +1,5 @@
 // src/components/productCards/ProductCards.jsx
-import React, { useEffect, useState,useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Box, Typography, Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../App";
@@ -81,11 +81,11 @@ export default function ProductCards() {
 
   // Get current user brand
   const storedUser = localStorage.getItem("user");
-const currentUser = storedUser ? JSON.parse(storedUser) : null;
-const userBrand = currentUser?.brandText || "Pickles";
+  const currentUser = storedUser ? JSON.parse(storedUser) : null;
+  const userBrand = currentUser?.brandText || "Pickles";
 
   // Filter categories based on brand
- const visibleCards = categoryData.filter(card => card.brand === userBrand);
+  const visibleCards = categoryData.filter((card) => card.brand === userBrand);
 
   // Load custom products
   useEffect(() => {
@@ -101,7 +101,8 @@ const userBrand = currentUser?.brandText || "Pickles";
   }, []);
 
   const handleAddProduct = (newProduct) => {
-    const slugBase = newProduct.slug || newProduct.label.toLowerCase().replace(/\s+/g, "-");
+    const slugBase =
+      newProduct.slug || newProduct.label.toLowerCase().replace(/\s+/g, "-");
     const product = {
       ...newProduct,
       id: Date.now(),
@@ -123,18 +124,18 @@ const userBrand = currentUser?.brandText || "Pickles";
 
       <Grid
         container
-        spacing={2}
+        spacing={2} // increased spacing for better look
         sx={{
-          mt: 2,
-          px: 1,
-          paddingInline: "20px",
-          display: "flex",
-          justifyContent: "flex-start",
-          ml: "15px",
+          mt: 3,
+          px: { xs: 2, sm: 3, md: 4 }, // responsive padding left/right
+          ml: { xs: 2, sm: 3, md: 4, lg: 5 }, // THIS GIVES LEFT MARGIN
+          maxWidth: "1400px",
+          marginInline: "auto", // centers the whole grid on large screens
+          justifyContent: { xs: "flex-start", md: "flex-start" },
         }}
       >
-{visibleCards.map((cat, i) => {
-            const totalUnits = getTotalUnits(categoryMap[cat.slug]?.items);
+        {visibleCards.map((cat, i) => {
+          const totalUnits = getTotalUnits(categoryMap[cat.slug]?.items);
 
           return (
             <Grid item key={i} xs={12} sm={6} md={4} lg={3} xl={2}>
@@ -158,6 +159,7 @@ const userBrand = currentUser?.brandText || "Pickles";
                     },
                   }}
                 >
+                  {/* ... rest of your card content (icon, count, label, View →) */}
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Box
                       sx={{
@@ -173,18 +175,30 @@ const userBrand = currentUser?.brandText || "Pickles";
                     >
                       {iconMap[cat.icon]}
                     </Box>
-
-                    <Typography fontSize={35} fontWeight={700} color={cat.text || cat.color}>
+                    <Typography
+                      fontSize={35}
+                      fontWeight={700}
+                      color={cat.text || cat.color}
+                    >
                       {totalUnits > 0 ? totalUnits : "0"}
                     </Typography>
                   </Box>
 
-                  <Typography sx={{ mt: 1.5 }} fontWeight={700} fontSize="0.95rem">
+                  <Typography
+                    sx={{ mt: 1.5 }}
+                    fontWeight={700}
+                    fontSize="0.95rem"
+                  >
                     {cat.label}
                   </Typography>
 
                   <Typography
-                    sx={{ mt: 1, color: cat.color, fontWeight: 700, fontSize: "0.9rem" }}
+                    sx={{
+                      mt: 1,
+                      color: cat.color,
+                      fontWeight: 700,
+                      fontSize: "0.9rem",
+                    }}
                   >
                     View →
                   </Typography>
