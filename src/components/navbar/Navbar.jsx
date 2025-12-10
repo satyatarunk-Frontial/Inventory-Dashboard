@@ -32,10 +32,9 @@ export default function Navbar() {
   const [avatarSrc, setAvatarSrc] = useState(null);
   const [brandText, setBrandText] = useState("The Pickls");
 
-const theme = useContext(ThemeContext);
+  const theme = useContext(ThemeContext);
 
-const { logout } = useContext(AuthContext);
-
+  const { logout } = useContext(AuthContext);
 
   // User update listener
   useEffect(() => {
@@ -72,11 +71,10 @@ const { logout } = useContext(AuthContext);
   const handleClose = () => setAnchorEl(null);
 
   const handleLogout = () => {
-  handleClose();  // close menu
-  logout();       // <-- MAIN FIX: this updates context instantly
-  navigate("/login", { replace: true });
-};
-
+    handleClose(); // close menu
+    logout(); // <-- MAIN FIX: this updates context instantly
+    navigate("/login", { replace: true });
+  };
 
   return (
     <Box
@@ -118,7 +116,7 @@ const { logout } = useContext(AuthContext);
               boxShadow: theme.card_shadow_strong,
             }}
           />
-          
+
           <Typography
             variant="h5"
             sx={{
@@ -160,8 +158,7 @@ const { logout } = useContext(AuthContext);
                 width: 46,
                 height: 46,
 
-                // ⭐ Avatar uses theme primary color
-                bgcolor: theme.primary,
+                bgcolor: "#16a34a", 
 
                 fontWeight: "bold",
                 fontSize: "1.2rem",
