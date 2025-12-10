@@ -8,10 +8,10 @@
     "count": 248,
     "subtitle": "Fresh veggie assortments",
     "slug": "vegetable",
-    "brand": "Pickles"
+    "brand": "The Pickls"
   },
   {
-    "label": "Non-Veg Pickles",
+    "label": "Non-Veg Pickls",
     "icon": "drumstick",
     "color": "#e53935",
     "text": "#5c1614",
@@ -19,7 +19,7 @@
     "count": 32,
     "subtitle": "Most loved spicy picks",
     "slug": "nonveg",
-    "brand": "Pickles"
+    "brand": "The Pickls"
   },
   {
     "label": "Delicious Powders",
@@ -30,7 +30,7 @@
     "count": 67,
     "subtitle": "Daily spice essentials",
     "slug": "powders",
-    "brand": "Pickles"
+    "brand": "The Pickls"
   },
   {
     "label": "Millets Ready to Cook",
@@ -41,7 +41,7 @@
     "count": 149,
     "subtitle": "Easy cooking options",
     "slug": "millets",
-    "brand": "Pickles"
+    "brand": "The Pickls"
   },
   {
     "label": "Ready to Eat",
@@ -52,7 +52,7 @@
     "count": 86,
     "subtitle": "Instant tasty food",
     "slug": "readytoeat",
-    "brand": "Pickles"
+    "brand": "The Pickls"
   },
   {
     "label": "Organic Millets",
@@ -63,7 +63,7 @@
     "count": 143,
     "subtitle": "100% pure millet variety",
     "slug": "organic",
-    "brand": "Pickles"
+    "brand": "The Pickls"
   },
   {
     "label": "Dry Fruit Laddu",
@@ -74,7 +74,7 @@
     "count": 189,
     "subtitle": "Premium dates, nuts & ghee energy balls",
     "slug": "dryfruit-laddu",
-    "brand": "Fevi"
+    "brand": "Flavi"
   },
   {
     "label": "Ragi Biscuits",
@@ -85,7 +85,7 @@
     "count": 156,
     "subtitle": "Crispy finger millet cookies – baked, not fried",
     "slug": "ragi-biscuits",
-    "brand": "Fevi"
+    "brand": "Flavi"
   },
   {
     "label": "Millet Sweets",
@@ -96,6 +96,6 @@
     "count": 142,
     "subtitle": "Guilt-free jaggery sweets with siridhanya",
     "slug": "millet-sweets",
-    "brand": "Fevi"
+    "brand": "Flavi"
   }
 ]

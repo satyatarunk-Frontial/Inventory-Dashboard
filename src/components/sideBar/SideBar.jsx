@@ -1,5 +1,5 @@
 // src/components/sidebar/SideBar.jsx
-import React, { useEffect, useMemo, useState, useContext } from "react";
+import React, { useEffect, useMemo, useState, useContext, useRef } from "react";
 import PropTypes from "prop-types";
 import { styled } from "@mui/material/styles";
 import {
@@ -26,6 +26,15 @@ import {
   Tag,
   Settings,
   ChevronDown,
+  Carrot,
+  Drumstick,
+  Soup,
+  CookingPot,
+  Utensils,
+  Sprout,
+  Gem,
+  Cookie,
+  Sparkles,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ThemeContext } from "../../Global/ThemeContext";
@@ -134,6 +143,39 @@ export default function SideBar({ initialOpen = true, onToggle }) {
   const PALETTE = useSidebarPalette(theme);
   const categories = useMemo(() => categoriesData || [], []);
 
+  // ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+  // ADD THIS ENTIRE BLOCK HERE (after the useState lines)
+  const sidebarRef = useRef(null);
+
+  // Close when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        open &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target)
+      ) {
+        setOpen(false);
+        onToggle?.(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open, onToggle]);
+
+  // Close when pressing Escape key
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === "Escape" && open) {
+        setOpen(false);
+        onToggle?.(false);
+      }
+    };
+    document.addEventListener("keydown", handleEscKey);
+    return () => document.removeEventListener("keydown", handleEscKey);
+  }, [open, onToggle]);
+  // ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+
   useEffect(() => onToggle?.(open), [open, onToggle]);
 
   const toggle = () => setOpen((v) => !v);
@@ -163,11 +205,30 @@ export default function SideBar({ initialOpen = true, onToggle }) {
     { key: "promotions", label: "Promotions", icon: Tag, href: "/promotions" },
     { key: "settings", label: "Settings", icon: Settings, href: "/settings" },
   ];
-   
+
+  const getCategoryIcon = (iconName, color) => {
+    const iconProps = { size: 22, strokeWidth: 2.2, color: color };
+
+    const lucideIcons = {
+      carrot: <Carrot {...iconProps} />,
+      drumstick: <Drumstick {...iconProps} />,
+      soup: <Soup {...iconProps} />,
+      cookingpot: <CookingPot {...iconProps} />,
+      utensils: <Utensils {...iconProps} />,
+      sprout: <Sprout {...iconProps} />,
+      gem: <Gem {...iconProps} />,
+      cookie: <Cookie {...iconProps} />,
+      sparkles: <Sparkles {...iconProps} />,
+    };
+
+    return (
+      lucideIcons[iconName] || <span style={{ fontSize: 24 }}>Package</span>
+    );
+  };
+
   return (
     <Root>
-      <Panel open={open} palette={PALETTE}>
-        {/* Scrollable Menu Area */}
+      <Panel ref={sidebarRef} open={open} palette={PALETTE}>
         <ScrollableContent>
           <List disablePadding>
             {menuItems.map((item) => {
@@ -281,16 +342,28 @@ export default function SideBar({ initialOpen = true, onToggle }) {
                                 },
                               }}
                             >
-                              <ListItemIcon sx={{ minWidth: 40 }}>
-                                <CategoryAvatar sx={{ bgcolor: color }}>
-                                  {cat.label[0].toUpperCase()}
-                                </CategoryAvatar>
+                              <ListItemIcon sx={{ minWidth: 56 }}>
+                                <Box
+                                  sx={{
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: "12px",
+                                    background: alpha(color, 0.12),
+                                    border: `1px solid ${alpha(color, 0.3)}`,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  {getCategoryIcon(cat.icon, color)}
+                                </Box>
                               </ListItemIcon>
                               <ListItemText
                                 primary={cat.label}
                                 primaryTypographyProps={{
                                   fontWeight: 600,
                                   fontSize: "0.9rem",
+                                  ml: 1.5,
                                 }}
                               />
                             </ListItemButton>
@@ -307,34 +380,43 @@ export default function SideBar({ initialOpen = true, onToggle }) {
 
         {/* Fixed Bottom Section - Always Visible */}
         <BottomSection palette={PALETTE}>
-          <Tooltip
-            title={!open ? "Expand Sidebar" : "Collapse Sidebar"}
-            placement="right"
+          <IconButton
+            onClick={toggle}
+            sx={{
+              width: "100%",
+              height: 56,
+              borderRadius: 1,
+              justifyContent: "center",
+              "&:hover": { bgcolor: "action.hover" },
+            }}
           >
-            <IconButton onClick={toggle} sx={{ width: "100%" }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  width: "100%",
-                  gap: 2,
-                }}
-              >
-                <IconWrap small={!open} active={false} palette={PALETTE}>
-                  {open ? <ArrowLeft size={22} /> : <ArrowRight size={22} />}
-                </IconWrap>
-                {open && (
-                  <Typography
-                    fontWeight={700}
-                    fontSize="0.95rem"
-                    color={PALETTE.text}
-                  >
-                    Close
-                  </Typography>
-                )}
-              </Box>
-            </IconButton>
-          </Tooltip>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: open ? "flex-start" : "center",
+                width: "100%",
+                gap: 2,
+                pl: open ? 1.5 : 0,
+                pr: open ? 2 : 0,
+              }}
+            >
+              <IconWrap small={!open} active={false} palette={PALETTE}>
+                {open ? <ArrowLeft size={32} /> : <ArrowRight size={35} />}
+              </IconWrap>
+
+              {open && (
+                <Typography
+                  fontWeight={700}
+                  fontSize="0.95rem"
+                  color={PALETTE.text}
+                  sx={{ ml: 1 }}
+                >
+                  Close
+                </Typography>
+              )}
+            </Box>
+          </IconButton>
         </BottomSection>
       </Panel>
     </Root>
