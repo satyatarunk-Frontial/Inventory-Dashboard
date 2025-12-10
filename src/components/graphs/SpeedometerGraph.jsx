@@ -11,12 +11,15 @@ export default function StockSpeedometerGraph({ items }) {
     <div
       style={{
         background: "#ffffff",
-        borderRadius: 28,
+        borderRadius: 20,
         padding: "26px 28px 0px",
         boxShadow: "0 12px 40px rgba(0,0,0,0.08)",
         height: "100%",
         display: "flex",
         flexDirection: "column",
+        marginTop: 10,
+        padding: 120,
+
       }}>
       <h2
         style={{

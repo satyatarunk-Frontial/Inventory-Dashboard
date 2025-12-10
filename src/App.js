@@ -132,9 +132,22 @@ function ProtectedRoute() {
 function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const marginLeft = sidebarOpen ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED;
-
   const location = useLocation();
   const hideFooter = location.pathname === "/settings";
+
+  // THIS IS THE MAGIC — ADD THIS useEffect
+  useEffect(() => {
+    if (location.pathname === "/settings") {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    // Cleanup when component unmounts or route changes
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [location.pathname]);
 
   return (
     <>
@@ -198,8 +211,15 @@ export default function App() {
                   />
 
                   <Route path="/category/:type" element={<StockCategoryPage />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/profile" element={<ProfilePage />} />
+   <Route 
+  path="/settings" 
+  element={
+    <div className="no-scrollbar">
+      <Settings />
+    </div>
+  } 
+/>
+               <Route path="/profile" element={<ProfilePage />} />
                 </Route>
               </Route>
 

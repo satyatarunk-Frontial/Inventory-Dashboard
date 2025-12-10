@@ -50,3 +50,23 @@
 body {
   overflow-y: auto;
 }
+
+/* HIDE SCROLLBAR ONLY ON SETTINGS PAGE — WORKS 100% */
+.no-scrollbar {
+  height: 100vh;
+  height: 100dvh;            /* Better for mobile */
+  overflow-y: auto;          /* Allows scrolling with mouse/touch */
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width:none;     /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, Opera, New Edge */
+  width: 0;
+  height: 0;
+}
+
+/* Extra safety — hide scrollbar on body when on settings */
+body.settings-page {
+  overflow: hidden;
+}
