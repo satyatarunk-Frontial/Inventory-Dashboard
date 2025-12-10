@@ -18,9 +18,6 @@ import {
 import { LogOut, User, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-// ⭐ IMPORT THEME
-import { AppTheme } from "../../Global/themeLoader";
-
 export const NAVBAR_HEIGHT = 85;
 
 export default function Navbar() {
@@ -33,10 +30,8 @@ export default function Navbar() {
   const [brandText, setBrandText] = useState("The Pickls");
 
   const theme = useContext(ThemeContext);
-
   const { logout } = useContext(AuthContext);
 
-  // User update listener
   useEffect(() => {
     const updateUserInfo = () => {
       const saved = localStorage.getItem("user");
@@ -67,169 +62,162 @@ export default function Navbar() {
       ? "/By The fevi.png"
       : "https://thepickls.com/cdn/shop/files/the_pickls.png?v=1704872288";
 
-  const handleAvatarClick = (event) => setAnchorEl(event.currentTarget);
+  const handleAvatarClick = (e) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
   const handleLogout = () => {
-    handleClose(); // close menu
-    logout(); // <-- MAIN FIX: this updates context instantly
+    handleClose();
+    logout();
     navigate("/login", { replace: true });
   };
 
   return (
-    <Box
-      sx={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        height: NAVBAR_HEIGHT,
-        zIndex: 1400,
+    <>
+      {/* THIS IS THE REAL FIX – APPLIED TO <html> OR <body> */}
+      <style jsx global>{`
+        html {
+          overflow-y: scroll;           /* Force scrollbar always */
+          scrollbar-gutter: stable both-edges; /* Reserve space permanently */
+        }
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        /* Optional: make scrollbar invisible but space still reserved */
+        ::-webkit-scrollbar {
+          width: 12px;
+        }
+        ::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: transparent;
+        }
+      `}</style>
 
-        // ⭐ Apply dynamic theme safely
-        background: theme.page_bg,
-        borderBottom: `1px solid ${theme.border_color}`,
-        boxShadow: theme.shadow,
-
-        px: { xs: 1, sm: 2 },
-      }}
-    >
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{ height: "100%" }}
+      <Box
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: NAVBAR_HEIGHT,
+          zIndex: 1400,
+          background: theme.page_bg,
+          borderBottom: `1px solid ${theme.border_color}`,
+          boxShadow: theme.shadow,
+          px: { xs: 1, sm: 2 },
+        }}
       >
-        {/* Left - Logo */}
-        <Stack direction="row" alignItems="center" spacing={2}>
-          <Box
-            component="img"
-            src={logoUrl}
-            alt={brandText}
-            sx={{
-              width: { xs: 48, sm: 56 },
-              height: { xs: 48, sm: 56 },
-              borderRadius: "50%",
-              objectFit: "contain",
-              background: theme.card_bg,
-              p: 0.5,
-              boxShadow: theme.card_shadow_strong,
-            }}
-          />
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ height: "100%" }}
+        >
+          {/* Logo */}
+          <Stack direction="row" alignItems="center" spacing={2}>
+            <Box
+              component="img"
+              src={logoUrl}
+              alt={brandText}
+              sx={{
+                width: { xs: 48, sm: 56 },
+                height: { xs: 48, sm: 56 },
+                borderRadius: "50%",
+                objectFit: "contain",
+                background: theme.card_bg,
+                p: 0.5,
+                boxShadow: theme.card_shadow_strong,
+              }}
+            />
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 800,
+                color: theme.text_primary,
+                display: { xs: "none", md: "block" },
+                letterSpacing: "0.8px",
+              }}
+            >
+              {brandText}
+            </Typography>
+          </Stack>
 
+          {/* Center Title */}
           <Typography
             variant="h5"
             sx={{
-              fontWeight: 800,
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              fontWeight: 600,
               color: theme.text_primary,
-              display: { xs: "none", md: "block" },
-              letterSpacing: "0.8px",
+              pointerEvents: "none",
+              whiteSpace: "nowrap",
+              display: { xs: "none", lg: "block" },
             }}
           >
-            {brandText}
+            Stock Inventory Management
           </Typography>
+
+          {/* Avatar */}
+          <Tooltip title="Account settings">
+            <IconButton onClick={handleAvatarClick}>
+              <Avatar
+                src={avatarSrc}
+                sx={{
+                  width: 46,
+                  height: 46,
+                  bgcolor: "#16a34a",
+                  fontWeight: "bold",
+                  fontSize: "1.2rem",
+                }}
+              >
+                {displayName.charAt(0).toUpperCase()}
+              </Avatar>
+            </IconButton>
+          </Tooltip>
+
+          {/* Menu */}
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            PaperProps={{
+              elevation: 8,
+              sx: {
+                mt: 1.5,
+                minWidth: 200,
+                borderRadius: 2,
+                background: theme.card_bg,
+                boxShadow: theme.shadow,
+              },
+            }}
+            transformOrigin={{ horizontal: "right", vertical: "top" }}
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+          >
+            <MenuItem disabled sx={{ opacity: 0.8 }}>
+              <User size={18} style={{ marginRight: 12 }} />
+              {displayName}
+            </MenuItem>
+            <Divider />
+            <MenuItem onClick={() => { handleClose(); navigate("/profile"); }}>
+              <User size={18} style={{ marginRight: 12 }} /> Profile
+            </MenuItem>
+            <MenuItem onClick={() => { handleClose(); navigate("/profile?tab=user-access"); }}>
+              <User size={18} style={{ marginRight: 12 }} /> User Access
+            </MenuItem>
+            <MenuItem onClick={() => { handleClose(); navigate("/settings?tab=user-access"); }}>
+              <Settings size={18} style={{ marginRight: 12 }} /> Settings
+            </MenuItem>
+            <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
+              <LogOut size={18} style={{ marginRight: 12 }} /> Logout
+            </MenuItem>
+          </Menu>
         </Stack>
-
-        {/* Center Title */}
-        <Typography
-          variant="h5"
-          sx={{
-            position: "absolute",
-            left: "50%",
-            top: "50%",
-            transform: "translate(-50%, -50%)",
-            textAlign: "center",
-            fontWeight: 600,
-            color: theme.text_primary,
-            pointerEvents: "none",
-            whiteSpace: "nowrap",
-            display: { xs: "none", lg: "block" },
-          }}
-        >
-          Stock Inventory Management
-        </Typography>
-
-        {/* Avatar */}
-        <Tooltip title="Account settings">
-          <IconButton onClick={handleAvatarClick}>
-            <Avatar
-              src={avatarSrc}
-              sx={{
-                width: 46,
-                height: 46,
-
-                bgcolor: "#16a34a", 
-
-                fontWeight: "bold",
-                fontSize: "1.2rem",
-              }}
-            >
-              {displayName.charAt(0).toUpperCase()}
-            </Avatar>
-          </IconButton>
-        </Tooltip>
-
-        {/* Menu */}
-        <Menu
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-          PaperProps={{
-            elevation: 8,
-            sx: {
-              mt: 1.5,
-              minWidth: 200,
-              borderRadius: 2,
-              background: theme.card_bg,
-              boxShadow: theme.shadow,
-            },
-          }}
-          transformOrigin={{ horizontal: "right", vertical: "top" }}
-          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-        >
-          <MenuItem disabled sx={{ opacity: 0.8 }}>
-            <User size={18} style={{ marginRight: 12 }} />
-            {displayName}
-          </MenuItem>
-
-          <Divider />
-
-          <MenuItem
-            onClick={() => {
-              handleClose();
-              navigate("/profile");
-            }}
-          >
-            <User size={18} style={{ marginRight: 12 }} />
-            Profile
-          </MenuItem>
-
-          <MenuItem
-            onClick={() => {
-              handleClose();
-              navigate("/profile?tab=user-access");
-            }}
-          >
-            <User size={18} style={{ marginRight: 12 }} />
-            User Access
-          </MenuItem>
-
-          <MenuItem
-            onClick={() => {
-              handleClose();
-              navigate("/settings?tab=user-access");
-            }}
-          >
-            <Settings size={18} style={{ marginRight: 12 }} />
-            Settings
-          </MenuItem>
-
-          <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
-            <LogOut size={18} style={{ marginRight: 12 }} />
-            Logout
-          </MenuItem>
-        </Menu>
-      </Stack>
-    </Box>
+      </Box>
+    </>
   );
 }

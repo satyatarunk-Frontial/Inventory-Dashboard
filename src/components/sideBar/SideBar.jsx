@@ -163,7 +163,7 @@ export default function SideBar({ initialOpen = true, onToggle }) {
     { key: "promotions", label: "Promotions", icon: Tag, href: "/promotions" },
     { key: "settings", label: "Settings", icon: Settings, href: "/settings" },
   ];
-
+   
   return (
     <Root>
       <Panel open={open} palette={PALETTE}>
