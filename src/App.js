@@ -28,6 +28,7 @@ import StockCategoryPage from "./pages/StockCategoryPage";
 import Foot from "./components/footer/Foot";
 import Login from "./Auth/Login";
 import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from "./pages/SettingsPage";          
 
 import "./App.css";
 
@@ -230,6 +231,7 @@ export default function App() {
                   /> */}
 
                   <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/settings" element={<SettingsPage />} />
                 </Route>
               </Route>
 

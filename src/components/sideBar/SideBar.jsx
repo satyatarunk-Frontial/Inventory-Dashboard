@@ -105,7 +105,7 @@ const BottomSection = styled(Box)(({ palette }) => ({
   borderTop: `1px solid ${palette.border}`,
   padding: "16px 18px",
   backdropFilter: "blur(10px)",
-  zIndex: 10,
+  zIndex: 10
 }));
 
 const IconWrap = styled(Box, {
