@@ -10,6 +10,8 @@ import SettingsTab from "../components/profile/SettingsTab";
 import AccountInfoTab from "../components/profile/AccountInfoTab";
 import EditDialog from "../components/profile/EditDialog";
 import UserAccessTab from "../components/profile/UserAccessTab";
+import ThemeCustomization from "../components/profile/ThemeCustomization";
+
 
 export default function ProfilePage() {
   const { user, updateUser } = useContext(AuthContext);
@@ -33,20 +35,20 @@ export default function ProfilePage() {
       default: return 0;
     }
   };
-
+  
   const [tab, setTab] = useState(initialTab);
   const [editOpen, setEditOpen] = useState(false);
-
+  
   useEffect(() => {
     setTab(initialTab());
   }, [tabParam]);
-
+  
   const handleTabChange = (_, newValue) => {
     setTab(newValue);
-    const tabNames = ["overview", "account-information", "settings", "user-access"];
+    const tabNames = ["overview", "account-information", "settings", "user-access","theme-customization"];
     setSearchParams({ tab: tabNames[newValue] });
   };
-
+   
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <ProfileHeader user={currentUser} onEdit={() => setEditOpen(true)} />
@@ -56,12 +58,14 @@ export default function ProfilePage() {
         <Tab label="Account Information" />
         <Tab label="Settings" />
         <Tab label="User Access" />
+        <Tab label="Theme Customization" />
       </Tabs>
 
       {tab === 0 && <OverviewTab user={currentUser} />}
       {tab === 1 && <AccountInfoTab />}
       {tab === 2 && <SettingsTab />}
       {tab === 3 && <UserAccessTab />}
+      {tab === 4 && <ThemeCustomization />}
 
       <EditDialog
         open={editOpen}

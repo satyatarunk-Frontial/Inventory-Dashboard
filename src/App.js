@@ -8,18 +8,23 @@ import {
   Outlet,
   Navigate,
 } from "react-router-dom";
-import { ThemeProvider as MUIThemeProvider, createTheme } from "@mui/material/styles";
+import {
+  ThemeProvider as MUIThemeProvider,
+  createTheme,
+} from "@mui/material/styles";
 import "./Global/themeLoader";
 
 // ⭐ CUSTOM THEME CONTEXT (Live theme update)
 import { ThemeProvider as CustomThemeProvider } from "./Global/ThemeContext";
 
-import SideBar, { SIDEBAR_WIDTH, SIDEBAR_COLLAPSED } from "./components/sideBar/SideBar";
+import SideBar, {
+  SIDEBAR_WIDTH,
+  SIDEBAR_COLLAPSED,
+} from "./components/sideBar/SideBar";
 import Navbar, { NAVBAR_HEIGHT } from "./components/navbar/Navbar";
 import ProductCards from "./components/productCards/ProductCards";
 import GraphsDashboardPage from "./pages/GraphDashboardpage";
 import StockCategoryPage from "./pages/StockCategoryPage";
-import Settings from "./components/settings/settings";
 import Foot from "./components/footer/Foot";
 import Login from "./Auth/Login";
 import ProfilePage from "./pages/ProfilePage";
@@ -93,7 +98,8 @@ function AuthProvider({ children }) {
     const handler = (e) => {
       if (e.key === "isLoggedIn") setIsLoggedIn(e.newValue === "true");
       if (e.key === "user") setUser(e.newValue ? JSON.parse(e.newValue) : null);
-      if (e.key === "agents") setAgents(e.newValue ? JSON.parse(e.newValue) : []);
+      if (e.key === "agents")
+        setAgents(e.newValue ? JSON.parse(e.newValue) : []);
     };
     window.addEventListener("storage", handler);
     return () => window.removeEventListener("storage", handler);
@@ -164,7 +170,9 @@ function DashboardLayout() {
       >
         <Navbar />
 
-        <main style={{ maxWidth: 1560, margin: "0 auto", padding: "24px 22px" }}>
+        <main
+          style={{ maxWidth: 1560, margin: "0 auto", padding: "24px 22px" }}
+        >
           <Outlet />
         </main>
 
@@ -190,10 +198,8 @@ export default function App() {
   return (
     <MUIThemeProvider theme={muiTheme}>
       <AuthProvider>
-
         {/* ⭐ FIXED: ADDED CUSTOM THEME PROVIDER HERE */}
         <CustomThemeProvider>
-
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<Login />} />
@@ -210,23 +216,26 @@ export default function App() {
                     }
                   />
 
-                  <Route path="/category/:type" element={<StockCategoryPage />} />
-   <Route 
-  path="/settings" 
-  element={
-    <div className="no-scrollbar">
-      <Settings />
-    </div>
-  } 
-/>
-               <Route path="/profile" element={<ProfilePage />} />
+                  <Route
+                    path="/category/:type"
+                    element={<StockCategoryPage />}
+                  />
+                  {/* <Route
+                    path="/settings"
+                    element={
+                      <div className="no-scrollbar">
+                        <Settings />
+                      </div>
+                    }
+                  /> */}
+
+                  <Route path="/profile" element={<ProfilePage />} />
                 </Route>
               </Route>
 
               <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
           </BrowserRouter>
-
         </CustomThemeProvider>
       </AuthProvider>
     </MUIThemeProvider>

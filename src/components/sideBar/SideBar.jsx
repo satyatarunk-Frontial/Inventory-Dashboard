@@ -40,6 +40,7 @@ import { useNavigate } from "react-router-dom";
 import { ThemeContext } from "../../Global/ThemeContext";
 import categoriesData from "../../data/productCards.json";
 
+
 export const SIDEBAR_WIDTH = 260;
 export const SIDEBAR_COLLAPSED = 82;
 const NAVBAR_HEIGHT = 85;
