@@ -1,4 +1,3 @@
-// src/components/sidebar/SideBar.jsx
 import React, { useEffect, useMemo, useState, useContext, useRef } from "react";
 import PropTypes from "prop-types";
 import { styled } from "@mui/material/styles";

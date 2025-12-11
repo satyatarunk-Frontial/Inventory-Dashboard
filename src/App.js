@@ -221,14 +221,7 @@ export default function App() {
                     path="/category/:type"
                     element={<StockCategoryPage />}
                   />
-                  {/* <Route
-                    path="/settings"
-                    element={
-                      <div className="no-scrollbar">
-                        <Settings />
-                      </div>
-                    }
-                  /> */}
+                  
 
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/settings" element={<SettingsPage />} />
