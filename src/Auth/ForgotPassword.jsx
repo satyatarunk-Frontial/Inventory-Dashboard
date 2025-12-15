@@ -12,20 +12,32 @@ import { useState } from "react";
 function ForgotPassword({ onBack }) {
   const [email, setEmail] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!email) {
-      alert("Please enter your email");
+  try {
+    const res = await fetch(
+      "http://localhost:5000/api/auth/forgot-password",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      }
+    );
+    
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message);
       return;
     }
 
-    alert("Reset link sent to your email!");
-
-    console.log("Password reset request for:", email);
-
-    setEmail("");
-  };
+    alert(data.message);
+    onBack();
+  } catch {
+    alert("Server error");
+  }
+};
 
   return (
     <Card

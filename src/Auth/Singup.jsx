@@ -16,22 +16,29 @@ function Signup({ onBack }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSignup = (e) => {
-    e.preventDefault();
+  const handleSignup = async (e) => {
+  e.preventDefault();
 
-    if (!form.name || !form.email || !form.password) {
-      alert("Please fill all fields");
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message);
       return;
     }
 
-    alert("Saved successfully!");
-
-    console.log("Signup data:", form);
-
-    setForm({ name: "", email: "", password: "" });
-
-   
-  };
+    alert("Signup successful! Please login.");
+    onBack();
+  } catch {
+    alert("Server error");
+  }
+};
 
   return (
     <Card

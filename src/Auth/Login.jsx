@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
-import users from "../data/users";
 import { AuthContext } from "../App";
 import { styled } from "@mui/material/styles";
 
@@ -40,20 +39,37 @@ export default function Login() {
   const currentUser = storedUser ? JSON.parse(storedUser) : null;
   const brandText = currentUser?.brandText || "Your Brand";
   
-  const handleLogin = (e) => {
-    e.preventDefault();
-
-    const user = users.find(
-      (u) => u.username === email && u.password === password
-    );
-
-    if (user) {
-      login(user);
-    } else {
-      alert("Invalid email or password!");
-    }
-  };
+  const handleLogin = async (e) => {
+  e.preventDefault();
   
+  try {
+    const response = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message);
+      return;
+    }
+
+    // save user locally
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    login(data.user); // AuthContext login
+    navigate("/", { replace: true });
+
+  } catch (error) {
+    console.error(error);
+    alert("Server error");
+  }
+};
+
   const GoogleSvg = () => (
     <svg width="22" height="22" viewBox="0 0 48 48">
       <path
